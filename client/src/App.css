@@ -15,7 +15,7 @@
 .movies-list-item {
   display:flex;
   flex-direction:row;
-  justify-content: flex-start; //you can change it depends on what you exactly need
+  justify-content: flex-start; 
 }
 
 /* Styles related to NavBar */
