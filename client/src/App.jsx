@@ -2,11 +2,15 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Login } from './Components/Login';
+import { Logout } from './Components/Logout';
 import { Homepage } from './Components/Homepage';
+import API from './API';
 
 function App() {
 
     const [errorMsg, setErrorMsg] = useState(undefined);
+    const [user, setUser] = useState(undefined);
+    const [loggedIn, setLoggedIn] = useState(false);
 
   
     useEffect(() => {
@@ -50,8 +54,9 @@ function App() {
         <>
         <BrowserRouter>
           <Routes>
-            <Route path='/' element={<><Homepage/></>} />
-            <Route path='/login' element={<><Login loginSuccessful={loginSuccessful}/></>} />
+            <Route path='/' element={<><Homepage loggedIn={loggedIn} loginSuccessful={loginSuccessful} user={user}/></>} />
+            <Route path='/login' element={<><Login loggedIn={loggedIn} loginSuccessful={loginSuccessful} user={user}/></>} />
+            <Route path='/logout' element={<><Logout loggedIn={loggedIn} loginSuccessful={loginSuccessful} user={user} doLogOut={doLogOut}/></>} />
           </Routes>
         </BrowserRouter>
       </>

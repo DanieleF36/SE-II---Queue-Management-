@@ -10,10 +10,10 @@ function Homepage(props) {
 
   return (
     <div className='background-image-container'>
-      <CustomNavbar />
+      <CustomNavbar loggedIn={props.loggedIn} user={props.user}/>
       <Container className="d-flex align-items-center justify-content-center" style={{marginTop: '50px'}}>
       <div>
-        <h1>Welcome OQM Office!!!</h1>
+        <h1>Welcome OQM Website!!!</h1>
       </div>
     </Container>
     </div>
