@@ -51,6 +51,8 @@ const isLoggedIn = (req, res, next) => {
     return res.status(401).json({ error: 'Not authenticated'});
 }
 const answerDelay = 300;
+//Number of total counter, usable for checking
+const nCounter = 3;
 
 app.use(session({
     secret:'anjndaljjahuiq8989',
