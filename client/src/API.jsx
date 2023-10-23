@@ -39,8 +39,43 @@ async function logIn(credentials) {
       throw userInfo;
     }
   }
+
+  /**
+ * Add a new service to a counter
+ * @param {string} service
+ * @param {int}  counterId
+ * @param {date} date
+ * @param {int} number
+ */
+async function configureCounter(service, counterId, date, number) {
+  try {
+    const response = await fetch(APIURL + `/counter`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        service: service,
+        counter: counterId,
+        date: date,
+        number: number
+      }),
+      credentials: "include",
+    });
+    if (response.ok) {
+      const id = Number(await response.text());
+      return id;
+    } else {
+      const message = await response.text();
+      throw new Error(message);
+    }
+  } catch (error) {
+    throw new Error(error.message, { cause: error });
+  }
+}
   
 
-const API = {logIn, logOut, getUserInfo};
+
+const API = {logIn, logOut, getUserInfo, configureCounter};
 
 export default API;
