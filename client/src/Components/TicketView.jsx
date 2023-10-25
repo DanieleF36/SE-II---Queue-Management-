@@ -14,7 +14,7 @@ function TicketView(props) {
 
     return (
         <div className='background-image-container'>
-            <CustomNavbar loggedIn={props.loggedIn} user={props.user} />
+            <CustomNavbar ticket={props.ticket} selservice={service} loggedIn={props.loggedIn} user={props.user} />
             <Container className="justify-content-center" style={{ marginTop: '50px' }}>
                 <Row>
                     <Col xs={10}>
