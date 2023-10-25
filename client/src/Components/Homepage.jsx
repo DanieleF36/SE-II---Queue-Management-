@@ -11,6 +11,8 @@ function Homepage(props) {
 
   const [services, setServices] = useState(['shipping', 'fee paymenyts', 'financial consulence', 'info desk']);
   const [selservice, setSelService] = useState('shipping');
+  const [counterid, setCounterId] = useState('1');
+  const [counterSer, setCounterSer] = useState(['shipping', 'fee paymenyts']);
 
 
   const navigate = useNavigate();
@@ -22,7 +24,7 @@ function Homepage(props) {
 
   }, []);
 
-  
+
 
   return (
     props.user ? props.user.role === 'admin' ? <div className='background-image-container'>
@@ -35,10 +37,24 @@ function Homepage(props) {
     </div>
       : <div className='background-image-container'>
         <CustomNavbar ticket={props.ticket} selservice={props.selservice} loggedIn={props.loggedIn} user={props.user} />
-        <Container className="d-flex align-items-center justify-content-center" style={{ marginTop: '50px' }}>
-          <div>
-            <h1>Welcome OQM Website!!! - (Officer View)</h1>
-          </div>
+        <Container className="justify-content-center" style={{ marginTop: '40px' }}>
+          <Row>
+            <Col xs={3}>
+              <div>
+                <h6>Officer's counter ID: <Button>{counterid}</Button></h6>
+                <h6>Service offered by the counter:</h6>
+                {counterSer.map(e => <h6><Button>{e}</Button></h6>)}
+              </div>
+            </Col>
+
+            <Col xs={6}><div style={{ marginTop: '20px' }} className="d-flex align-items-center justify-content-center">
+            <h5>Press the button to call the next customer:</h5>
+              <Button style={{marginLeft:'10px'}} variant="success" size="lg" className="btn-lg" onClick={()=>{props.handleNextCustomer(); navigate('/');}}>
+                Next Customer
+              </Button>
+            </div></Col>
+          </Row>
+          <Row><h6>Current Served: <Button>{props.ticketC}</Button></h6></Row>
         </Container>
       </div> :
       <div className='background-image-container'>
@@ -58,16 +74,16 @@ function Homepage(props) {
                 ))}
               </DropdownButton>
             </div>
-            <div style={{marginTop:'20px'}} className="container d-flex align-items-center justify-content-center">
-              <Button variant="danger" size="lg" className="btn-lg" onClick={()=>{props.handleGetTicket(selservice); navigate(`/${selservice}/ticket`);}}>
+            <div style={{ marginTop: '20px' }} className="container d-flex align-items-center justify-content-center">
+              <Button variant="danger" size="lg" className="btn-lg" onClick={() => { props.handleGetTicket(selservice); navigate(`/${selservice}/ticket`); }}>
                 Get a Ticket
               </Button>
             </div>
           </div>
         </Container>
       </div>
-      
-      
+
+
   )
 }
 

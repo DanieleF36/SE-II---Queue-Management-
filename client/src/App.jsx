@@ -13,7 +13,7 @@ function App() {
     const [user, setUser] = useState(undefined);
     const [loggedIn, setLoggedIn] = useState(false);
     const [ticket, setTicket] = useState(undefined);
-    const [ticketC, setTicketC] = useState(undefined);
+    const [ticketC, setTicketC] = useState('1SH1');
     const [ticketD, setTicketD] = useState(undefined);
     const [selservice, setselService] = useState(undefined);
 
@@ -36,6 +36,11 @@ function App() {
       setTicketC('1SH1');
       setTicketD(2);
       setselService(selservice);
+    };
+
+    const handleNextCustomer = () => {
+      //adding API from backend for updating current customer and retrieving ticket code 
+      setTicketC('1SH2');
     };
   
     function handleError(err) {
@@ -67,7 +72,7 @@ function App() {
         <>
         <BrowserRouter>
           <Routes>
-            <Route path='/' element={<><Homepage ticket={ticket} selservice={selservice} handleGetTicket={handleGetTicket} loggedIn={loggedIn} loginSuccessful={loginSuccessful} user={user}/></>} />
+            <Route path='/' element={<><Homepage handleNextCustomer={handleNextCustomer} ticketC={ticketC} ticket={ticket} selservice={selservice} handleGetTicket={handleGetTicket} loggedIn={loggedIn} loginSuccessful={loginSuccessful} user={user}/></>} />
             <Route path='/:service/ticket' element={<><TicketView ticket={ticket} ticketC={ticketC}  ticketD={ticketD} /></>} />
             <Route path='/login' element={<><Login ticket={ticket} selservice={selservice} loggedIn={loggedIn} loginSuccessful={loginSuccessful} user={user}/></>} />
             <Route path='/logout' element={<><Logout ticket={ticket} selservice={selservice} loggedIn={loggedIn} loginSuccessful={loginSuccessful} user={user} doLogOut={doLogOut}/></>} />
