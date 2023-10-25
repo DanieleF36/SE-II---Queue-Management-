@@ -15,6 +15,7 @@ function App() {
     const [ticket, setTicket] = useState(undefined);
     const [ticketC, setTicketC] = useState(undefined);
     const [ticketD, setTicketD] = useState(undefined);
+    const [selservice, setselService] = useState(undefined);
 
   
     useEffect(() => {
@@ -34,6 +35,7 @@ function App() {
       setTicket('1SH3');
       setTicketC('1SH1');
       setTicketD(2);
+      setselService(selservice);
     };
   
     function handleError(err) {
@@ -65,10 +67,10 @@ function App() {
         <>
         <BrowserRouter>
           <Routes>
-            <Route path='/' element={<><Homepage handleGetTicket={handleGetTicket} loggedIn={loggedIn} loginSuccessful={loginSuccessful} user={user}/></>} />
+            <Route path='/' element={<><Homepage ticket={ticket} selservice={selservice} handleGetTicket={handleGetTicket} loggedIn={loggedIn} loginSuccessful={loginSuccessful} user={user}/></>} />
             <Route path='/:service/ticket' element={<><TicketView ticket={ticket} ticketC={ticketC}  ticketD={ticketD} /></>} />
-            <Route path='/login' element={<><Login loggedIn={loggedIn} loginSuccessful={loginSuccessful} user={user}/></>} />
-            <Route path='/logout' element={<><Logout loggedIn={loggedIn} loginSuccessful={loginSuccessful} user={user} doLogOut={doLogOut}/></>} />
+            <Route path='/login' element={<><Login ticket={ticket} selservice={selservice} loggedIn={loggedIn} loginSuccessful={loginSuccessful} user={user}/></>} />
+            <Route path='/logout' element={<><Logout ticket={ticket} selservice={selservice} loggedIn={loggedIn} loginSuccessful={loginSuccessful} user={user} doLogOut={doLogOut}/></>} />
           </Routes>
         </BrowserRouter>
       </>

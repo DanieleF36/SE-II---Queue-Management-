@@ -11,7 +11,7 @@ function Logout(props) {
 
   return (
     <div className='background-image-container'>
-      <CustomNavbar loggedIn={props.loggedIn} user={props.user}/>
+      <CustomNavbar ticket={props.ticket} selservice={props.selservice} loggedIn={props.loggedIn} user={props.user}/>
       <Container>
         <Row style={{marginTop:'20px'}}>
           <Col xs={5}></Col>

@@ -26,7 +26,7 @@ function Homepage(props) {
 
   return (
     props.user ? props.user.role === 'admin' ? <div className='background-image-container'>
-      <CustomNavbar loggedIn={props.loggedIn} user={props.user} />
+      <CustomNavbar ticket={props.ticket} selservice={props.selservice} loggedIn={props.loggedIn} user={props.user} />
       <Container className="d-flex align-items-center justify-content-center" style={{ marginTop: '50px' }}>
         <div>
           <h1>Welcome OQM Website!!! - (Administrator View)</h1>
@@ -34,7 +34,7 @@ function Homepage(props) {
       </Container>
     </div>
       : <div className='background-image-container'>
-        <CustomNavbar loggedIn={props.loggedIn} user={props.user} />
+        <CustomNavbar ticket={props.ticket} selservice={props.selservice} loggedIn={props.loggedIn} user={props.user} />
         <Container className="d-flex align-items-center justify-content-center" style={{ marginTop: '50px' }}>
           <div>
             <h1>Welcome OQM Website!!! - (Officer View)</h1>
@@ -42,7 +42,7 @@ function Homepage(props) {
         </Container>
       </div> :
       <div className='background-image-container'>
-        <CustomNavbar loggedIn={props.loggedIn} user={props.user} />
+        <CustomNavbar ticket={props.ticket} selservice={props.selservice} loggedIn={props.loggedIn} user={props.user} />
         <Container className="d-flex align-items-center justify-content-center" style={{ marginTop: '50px' }}>
           <div>
             <h3>Select a service:</h3>

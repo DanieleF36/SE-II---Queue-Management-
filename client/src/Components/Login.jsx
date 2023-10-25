@@ -47,7 +47,7 @@ function Login(props) {
 
   return (
     <div className='background-image-container'>
-      <CustomNavbar loggedIn={props.loggedIn} user={props.user}/>
+      <CustomNavbar ticket={props.ticket} selservice={props.selservice} loggedIn={props.loggedIn} user={props.user}/>
       <Container>
         <Row>
           <Col xs={3}></Col>

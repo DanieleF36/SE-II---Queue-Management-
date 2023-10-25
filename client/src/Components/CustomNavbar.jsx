@@ -19,6 +19,8 @@ const CustomNavbar = (props) => {
       </Navbar.Brand>
       <Navbar.Toggle aria-controls="navbar-nav" />
       <Nav.Link className='custom-link' onClick={()=>navigate('/')}>Home</Nav.Link>
+      <Nav.Link className='custom-link' onClick={props.ticket?()=>navigate(`/${props.selservice}/ticket`):()=>navigate('/')}>Ticket</Nav.Link>
+      <Nav.Link className='custom-link'>Display</Nav.Link> 
       <Navbar.Collapse id="navbar-nav" className="justify-content-end">
       <Nav>
           {props.loggedIn ? props.user.role === 'admin' ?
