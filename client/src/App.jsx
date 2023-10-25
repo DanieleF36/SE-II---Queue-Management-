@@ -66,6 +66,7 @@ function App() {
     const loginSuccessful = (user) => {
       setUser(user);
       setLoggedIn(true);
+      setTicket(undefined);
     }
 
     return (
