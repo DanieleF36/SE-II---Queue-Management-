@@ -21,6 +21,32 @@ exports.listServices = () =>{
     });
 };
 
+exports.addService = (name, avgTime) =>{
+    return new Promise((resolve, reject) => {
+        const sql = 'INSERT INTO service(name, averageTime) VALUES(?, ?)';
+        db.run(sql, [name, avgTime], function(err) {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve(this.lastID)
+        });
+    });
+};
+
+exports.removeService = (id) =>{
+    return new Promise((resolve, reject) => {
+        const sql = 'DELETE FROM service WHERE id = ?'
+        db.run(sql, [id], (err) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+        });
+        resolve(true)
+    });
+};
+
 exports.listServicesByCounter = (id) =>{
     return new Promise((resolve, reject) => {
         const sql = 'SELECT S.service FROM servicesByCounter S WHERE S.counter = ?';
