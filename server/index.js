@@ -192,9 +192,7 @@ app.get('/api/counter', async (req, res) => {
 
  app.get('/api/counter/number', async (req, res) => {
     try{
-        console.log("PROVA")
         const counterNum = await dao.getCounterNumber();
-        console.log("RRRRRR")
         res.status(200).json(counterNum);
         }catch(error){
         res.status(500).end();
@@ -205,6 +203,15 @@ app.get('/api/services', async (req, res) => {
     try{
         const services = await dao.listServices();
         res.status(200).json(services);
+        }catch(error){
+        res.status(500).end();
+    }
+});
+
+app.get('/api/officer', async (req, res) => {  
+    try{
+        const officer = await dao.getOfficer();
+        res.status(200).json(officer);
         }catch(error){
         res.status(500).end();
     }

@@ -40,64 +40,64 @@ async function logIn(credentials) {
     }
   }
   
-  /*
-  * Add a new service to the counter
-  * @param {int} counterId
-  * @param {string}  serviceName
-  */
- async function addServiceToCounter(counterId, serviceName) {
-   try {
-     const response = await fetch(URL + `/counter`, {
-       method: "POST",
-       headers: {
-         "Content-Type": "application/json",
-       },
-       body: JSON.stringify({
-         counterId: counterId,
-         serviceName: serviceName,
-       }),
-       credentials: "include",
-     });
-     if (response.ok) {
-       return true;
-     } else {
-       const message = response.text();
-       throw new Error(message);
-     }
-   } catch (error) {
-     throw new Error(error.message, { cause: error });
-   }
- }
+//   /*
+//   * Add a new service to the counter
+//   * @param {int} counterId
+//   * @param {string}  serviceName
+//   */
+//  async function addServiceToCounter(counterId, serviceName) {
+//    try {
+//      const response = await fetch(URL + `/counter`, {
+//        method: "POST",
+//        headers: {
+//          "Content-Type": "application/json",
+//        },
+//        body: JSON.stringify({
+//          counterId: counterId,
+//          serviceName: serviceName,
+//        }),
+//        credentials: "include",
+//      });
+//      if (response.ok) {
+//        return true;
+//      } else {
+//        const message = response.text();
+//        throw new Error(message);
+//      }
+//    } catch (error) {
+//      throw new Error(error.message, { cause: error });
+//    }
+//  }
  
  
- /*
-  * Remove a service to the counter
-  * @param {int} counterId
-  * @param {string}  serviceName
-  */
- async function removeServiceToCounter(counterId, serviceName) {
-   try {
-     const response = await fetch(URL + `/counter`, {
-       method: "DELETE",
-       headers: {
-         "Content-Type": "application/json",
-       },
-       body: JSON.stringify({
-         counterId: counterId,
-         serviceName: serviceName,
-       }),
-       credentials: "include",
-     });
-     if (response.ok) {
-       return true;
-     } else {
-       const message = response.text();
-       throw new Error(message);
-     }
-   } catch (error) {
-     throw new Error(error.message, { cause: error });
-   }
- }
+//  /*
+//   * Remove a service to the counter
+//   * @param {int} counterId
+//   * @param {string}  serviceName
+//   */
+//  async function removeServiceToCounter(counterId, serviceName) {
+//    try {
+//      const response = await fetch(URL + `/counter`, {
+//        method: "DELETE",
+//        headers: {
+//          "Content-Type": "application/json",
+//        },
+//        body: JSON.stringify({
+//          counterId: counterId,
+//          serviceName: serviceName,
+//        }),
+//        credentials: "include",
+//      });
+//      if (response.ok) {
+//        return true;
+//      } else {
+//        const message = response.text();
+//        throw new Error(message);
+//      }
+//    } catch (error) {
+//      throw new Error(error.message, { cause: error });
+//    }
+//  }
  
  /*
   * Get the list of all the services
@@ -123,16 +123,16 @@ async function logIn(credentials) {
   */
  async function getCounterDetails() {
   const response = await fetch(URL + `/counter`);
-  const counterNum = await response.json();
+  const counter = await response.json();
   if(response.ok){
-    return counterNum.map((e) => ({
+    return counter.map((e) => ({
       id : e.id,
       name : e.name,
       counter : e.counter,
       date: e.date,
-       number : e.number}));
+      number : e.number}));
    } else {
-     throw counterNum;
+     throw counter;
    }
  }
 
@@ -143,7 +143,6 @@ async function logIn(credentials) {
     console.log("API")
     const response = await fetch(URL + `/counter/number`);
     const counterNum = await response.json();
-    console.log(counterNum);
     if(response.ok){
       return counterNum.map((e) => ({
         id : e.id,
@@ -153,6 +152,19 @@ async function logIn(credentials) {
      }
 }
 
-const API = {logIn, logOut, getUserInfo, getCounterDetails, listServices, removeServiceToCounter, addServiceToCounter, getCounterNumber};
+  /*
+  * Get the officer id
+  */
+  async function getOfficer() {
+    const response = await fetch(URL + `/officer`);
+    const officer = await response.json();
+    if(response.ok){
+      return officer
+     } else {
+       throw officer;
+     }
+}
+
+const API = {logIn, logOut, getUserInfo, getCounterDetails, listServices, getCounterNumber, getOfficer};
 
 export default API;

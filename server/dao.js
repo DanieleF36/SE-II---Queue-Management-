@@ -156,7 +156,7 @@ exports.incrementNumberCustomerService = (counterID, serviceName) => {
 //10/26/2023
 exports.getCounterDetails = () =>{
     return new Promise((resolve, reject) => {
-        const sql = 'SELECT id, service, counter,date,number FROM counter ';
+        const sql = 'SELECT id, service, counter,date,number FROM counterStats ';
         db.all(sql, [], (err, rows) => {
             if (err) {
                 reject(err);
@@ -187,6 +187,19 @@ exports.getCounterNumber = () =>{
                 name : e.name
             }));
             resolve(counter);
+        });
+    });
+};
+
+exports.getOfficer = () =>{
+    return new Promise((resolve, reject) => {
+        const sql = 'SELECT id FROM user WHERE role == "officer"';
+        db.all(sql, [], (err, rows) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve(rows);
         });
     });
 };

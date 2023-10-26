@@ -18,6 +18,7 @@ function Homepage(props) {
   const [rows, setRows] = useState([])
   const [counter, setCounter] = useState();
   const [counterInfo, setCounterInfo] = useState([])
+  const [officerInfo, setofficerInfo] = useState([])
   const handleCounterChange = (event) => {
     // Update the counter state with the selected value
     setCounter(event.target.value);
@@ -58,10 +59,14 @@ function Homepage(props) {
       setOptions(s)
     });
     API.getCounterNumber().then((c) =>{
-      setCounterInfo(c);
+       setCounterInfo(c);
+    })
+    API.getOfficer().then((o)=>{
+      setofficerInfo(o);
     })
   }, []);
 
+  console.log(officerInfo)
   return (
     props.user ? props.user.role === 'admin' ? <div className='background-image-container'>
       <CustomNavbar ticket={props.ticket} selservice={props.selservice} loggedIn={props.loggedIn} user={props.user} />
@@ -84,10 +89,11 @@ function Homepage(props) {
       <Container>
         <Row>
           <Col>
-            <Form.Select aria-label="Default select example" onChange={handleCounterChange}>
-              <option>Select the counter</option>
-              {counterInfo.map((ci) => (
-                  <option key={ci.name} value={ci.value}></option>
+            <Form.Select aria-label="Select an option" onChange={handleCounterChange}>
+                  {counterInfo.map((value) => (
+                    <option key={value.id}>
+                      {value.id}
+                    </option>
               ))}
             </Form.Select>
           </Col>
@@ -108,11 +114,12 @@ function Homepage(props) {
           )}
           </Col>
           <Col>
-            <Form.Select aria-label="Default select example" onChange={handleOfficerChange}>
-              <option>Select the officer</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
+          <Form.Select aria-label="Select an option" onChange={handleCounterChange}>
+                  {officerInfo.map((value) => (
+                    <option key={value.id}>
+                      {value.id}
+                    </option>
+              ))}
             </Form.Select>
           </Col>
         </Row>
