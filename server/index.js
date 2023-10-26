@@ -39,7 +39,7 @@ app.use(express.json());
 app.use(express.static('public'))
 
 const corsOptions = {
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173','http://localhost:5174'],
     credentials: true,
 };
 app.use(cors(corsOptions));
@@ -51,6 +51,8 @@ const isLoggedIn = (req, res, next) => {
     return res.status(401).json({ error: 'Not authenticated'});
 }
 const answerDelay = 300;
+//Number of total counter, usable for checking
+const nCounter = 3;
 
 app.use(session({
     secret:'anjndaljjahuiq8989',
@@ -61,6 +63,105 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// GET /api/servicesbycounter/:id
+app.get('/api/servicesbycounter/:id', async (req, res) => {
+    try {
+      const services = await dao.listServicesByCounter(req.params.id);
+      res.json(services);
+    } catch(err) {
+      console.log(err);
+      res.status(500).end();
+    }
+  });
+
+app.put('/api/nextCustomer/:id', [
+    check('id').isInt({min: 0})
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({errors: errors.array()});
+    }
+    try {
+        const services = await dao.listServicesByCounter(req.params.id);
+        const queueState = await dao.queuesState(services);
+
+        let max = -1;
+        let averageTime = -1;
+        let next = -1;
+        let name = '';
+        let code = '';
+        for(let i of queueState){
+            if(i.last - i.current >0 && i.last - i.current >= max) {
+                max = i.last - i.current;
+                averageTime = i.averageTime;
+                next = i.current +1;
+                name = i.name;
+                code = i.code;
+            }
+        }
+        for(let i of queueState){
+            if(i.last - i.current >0 && i.last - i.current == max && i.averageTime < averageTime) {
+                averageTime = i.averageTime;
+                max = i.last - i.current;
+                next = i.current +1;
+                name = i.name;
+                code = i.code;
+            }
+        }
+        const nextCustomer = max==-1 ? "No one available":(code+next);
+        await dao.updateQueue(code);
+        res.status(200).json({service: name, nextCustomer: nextCustomer});
+    } catch(err) {
+        console.log(err);
+        res.status(500).json({errors: ["Database error"]});
+    }
+});
+
+// GET /api/services/
+app.get('/api/services', async (req, res) => {
+    try {
+      const services = await dao.listServices();
+      res.json(services);
+    } catch(err) {
+      console.log(err);
+      res.status(500).end();
+    }
+  });
+
+// GET /api/services/<id>
+app.get('/api/services/:id', async (req, res) => {
+    try {
+      const result = await dao.getService(req.params.id);
+      if(result.error)
+        res.status(404).json(result);
+      else
+        res.json(result);
+    } catch(err) {
+      console.log(err);
+      res.status(500).end();
+    }
+  });
+
+
+// POST /api/services/<id>
+app.post('/api/services/:id', [
+    check('id').isInt(),
+  ], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({errors: errors.array()});
+    }
+  
+    try {
+      const numRowChanges = await dao.incrLast(req.params.id);
+      // number of changed rows is sent to client as an indicator of success
+      setTimeout(()=>res.json(numRowChanges), answerDelay);
+    } catch (err) {
+      console.log(err);
+      res.status(503).json({ error: `Database error during the increment ${req.params.id}.` });
+    }
+  
+  });
 
 /** ******************************************************************************************************************************************* **/
 
@@ -91,4 +192,4 @@ app.delete('/api/sessions/current', (req, res) => {
 
 
 const PORT = 3001;
-app.listen(PORT, ()=>console.log(`Server running on http://localhost:${PORT}`));
+app.listen(PORT, ()=>console.log(`Server running on http://localhost:${PORT}/`));
