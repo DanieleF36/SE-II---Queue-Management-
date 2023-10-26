@@ -69,7 +69,7 @@ async function listServices() {
 }
 async function getService(id) { 
   // call  /api/services
-  const response = await fetch(URL+`/services/:id`);
+  const response = await fetch(URL+`/services/${id}`);
   const service = await response.json();
   if (response.ok) {
     const e = service;

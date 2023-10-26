@@ -9,7 +9,7 @@ import "./Login.css";
 
 function Homepage(props) {
 
-  const [selservice, setSelService] = useState('shipping');
+  const [selservice, setSelService] = useState('unselected');
   const [counterid, setCounterId] = useState('1');
   const [counterSer, setCounterSer] = useState(['shipping', 'fee paymenyts']);
 

@@ -49,7 +49,6 @@ function App() {
             id= e.id;
             e.last++;
             setTicket('1'+ e.code + e.last);
-            setTicketC('1'+e.code+ e.current);
             setTicketD(e.last-e.current);
           return Object.assign({}, e);
         } else {
@@ -57,6 +56,9 @@ function App() {
         }
       })
       );
+
+      API.getService(id).then(e=>setTicketC('1'+e.code+e.current))
+      .catch((err) => handleError(err));
 
       
       
@@ -70,8 +72,7 @@ function App() {
     };
 
     const handleNextCustomer = () => { 
-      API.nextCustomer(1).then(e=>setTicket(e.nextCustomer));
-      setTicketC(ticket);
+      API.nextCustomer(1).then(e=>{setTicket(e.nextCustomer); setTicketC(ticket);});
     };
   
     function handleError(err) {
