@@ -2,11 +2,20 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Login } from './Components/Login';
+import { Logout } from './Components/Logout';
 import { Homepage } from './Components/Homepage';
+import { TicketView } from './Components/TicketView';
+import API from './API';
 
 function App() {
 
     const [errorMsg, setErrorMsg] = useState(undefined);
+    const [user, setUser] = useState(undefined);
+    const [loggedIn, setLoggedIn] = useState(false);
+    const [ticket, setTicket] = useState(undefined);
+    const [ticketC, setTicketC] = useState('1SH1');
+    const [ticketD, setTicketD] = useState(undefined);
+    const [selservice, setselService] = useState(undefined);
 
   
     useEffect(() => {
@@ -20,6 +29,19 @@ function App() {
       };
       checkAuth();
     }, []);
+
+    const handleGetTicket = (selservice) => {
+      //adding API from backend for updating last customer for that service and retrieving ticket code
+      setTicket('1SH3');
+      setTicketC('1SH1');
+      setTicketD(2);
+      setselService(selservice);
+    };
+
+    const handleNextCustomer = () => {
+      //adding API from backend for updating current customer and retrieving ticket code 
+      setTicketC('1SH2');
+    };
   
     function handleError(err) {
       let errMsg = `Unknown Server error`;
@@ -44,14 +66,17 @@ function App() {
     const loginSuccessful = (user) => {
       setUser(user);
       setLoggedIn(true);
+      setTicket(undefined);
     }
 
     return (
         <>
         <BrowserRouter>
           <Routes>
-            <Route path='/' element={<><Homepage/></>} />
-            <Route path='/login' element={<><Login loginSuccessful={loginSuccessful}/></>} />
+            <Route path='/' element={<><Homepage handleNextCustomer={handleNextCustomer} ticketC={ticketC} ticket={ticket} selservice={selservice} handleGetTicket={handleGetTicket} loggedIn={loggedIn} loginSuccessful={loginSuccessful} user={user}/></>} />
+            <Route path='/:service/ticket' element={<><TicketView ticket={ticket} ticketC={ticketC}  ticketD={ticketD} /></>} />
+            <Route path='/login' element={<><Login ticket={ticket} selservice={selservice} loggedIn={loggedIn} loginSuccessful={loginSuccessful} user={user}/></>} />
+            <Route path='/logout' element={<><Logout ticket={ticket} selservice={selservice} loggedIn={loggedIn} loginSuccessful={loginSuccessful} user={user} doLogOut={doLogOut}/></>} />
           </Routes>
         </BrowserRouter>
       </>
