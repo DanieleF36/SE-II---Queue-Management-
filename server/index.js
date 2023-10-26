@@ -164,28 +164,33 @@ app.put('/api/nextCustomer/:id', [
     try {
         const services = await dao.listServicesByCounter(req.params.id);
         const queueState = await dao.queuesState(services);
+
         let max = -1;
         let averageTime = -1;
         let next = -1;
         let name = '';
+        let code = '';
         for(let i of queueState){
-            if(i.last - i.current >= max) {
+            if(i.last - i.current >0 && i.last - i.current >= max) {
                 max = i.last - i.current;
                 averageTime = i.averageTime;
                 next = i.current +1;
                 name = i.name;
+                code = i.code;
             }
         }
         for(let i of queueState){
-            if(i.last - i.current == max && i.averageTime < averageTime) {
+            if(i.last - i.current >0 && i.last - i.current == max && i.averageTime < averageTime) {
                 averageTime = i.averageTime;
                 max = i.last - i.current;
                 next = i.current +1;
                 name = i.name;
+                code = i.code;
             }
         }
-        await dao.updateQueue(name);
-        res.status(200).json({service: name, nextCustomer: name+next});
+        const nextCustomer = max==-1 ? "No one available":(code+next);
+        await dao.updateQueue(code);
+        res.status(200).json({service: name, nextCustomer: nextCustomer});
     } catch(err) {
         console.log(err);
         res.status(500).json({errors: ["Database error"]});
