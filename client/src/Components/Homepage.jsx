@@ -53,7 +53,7 @@ function Homepage(props) {
               </Button>
             </div></Col>
           </Row>
-          <Row><h6>Current Served: <Button>{props.ticketC}</Button></h6></Row>
+          <Row><h6>Current Served: <Button>{props.ticket}</Button></h6></Row>
         </Container>
       </div> :
       <div className='background-image-container'>

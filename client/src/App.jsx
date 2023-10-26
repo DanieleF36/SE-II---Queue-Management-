@@ -72,7 +72,7 @@ function App() {
     };
 
     const handleNextCustomer = () => { 
-      API.nextCustomer(1).then(e=>{setTicket(e.nextCustomer); setTicketC(ticket);});
+      API.nextCustomer(1).then(e=>setTicket(e.nextCustomer));
     };
   
     function handleError(err) {
