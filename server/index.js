@@ -154,7 +154,7 @@ app.post('/api/auth/pages', isLoggedIn, [
         }
 });
 
-app.get('/api/nextCustomer/:id', [
+app.put('/api/nextCustomer/:id', [
     check('id').isInt({min: 0})
 ], async (req, res) => {
     const errors = validationResult(req);
@@ -171,18 +171,18 @@ app.get('/api/nextCustomer/:id', [
         let next = -1;
         let name = '';
         for(let i of queueState){
-            if(i.current - i.last >= max) {
-                max = i.current - i.last;
+            if(i.last - i.current >= max) {
+                max = i.last - i.current;
                 averageTime = i.averageTime;
-                next = i.last +1;
+                next = i.current +1;
                 name = i.name;
             }
         }
         for(let i of queueState){
-            if(i.current - i.last == max && i.averageTime < averageTime) {
+            if(i.last - i.current == max && i.averageTime < averageTime) {
                 averageTime = i.averageTime;
-                max = i.current - i.last;
-                next = i.last +1;
+                max = i.last - i.current;
+                next = i.current +1;
                 name = i.name;
             }
         }
