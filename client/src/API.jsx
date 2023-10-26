@@ -103,22 +103,18 @@ async function logIn(credentials) {
   * Get the list of all the services
   */
  async function listServices() {
-   try {
-     const response = await fetch(URL + `/counter`, {
-       method: "GET",
-       headers: {
-         "Content-Type": "application/json",
-       },
-       credentials: "include",
-     });
-     if (response.ok) {
-       return true;
-     } else {
-       const message = response.text();
-       throw new Error(message);
-     }
-   } catch (error) {
-     throw new Error(error.message, { cause: error });
+  const response = await fetch(URL + `/services`);
+  const services = await response.json();
+  if(response.ok){
+    return services.map((e) => ({
+      id : e.id,
+      code : e.code,
+      name : e.name,
+      current : parseInt(e.current),
+      last : parseInt(e.last),
+      averageTime : parseInt(e.averageTime)}));
+   } else {
+     throw services;
    }
  }
  
@@ -126,26 +122,37 @@ async function logIn(credentials) {
   * Get the list of all the counter
   */
  async function getCounterDetails() {
-  console.log("getCounterDetails");
-   try {
-     const response = await fetch(URL + `/counter`, {
-       method: "GET",
-       headers: {
-         "Content-Type": "application/json",
-       },
-       credentials: "include",
-     });
-     if (response.ok) {
-       return await response.json();
-     } else {
-       const message = response.text();
-       throw new Error(message);
-     }
-   } catch (error) {
-     throw new Error(error.message, { cause: error });
+  const response = await fetch(URL + `/counter`);
+  const counterNum = await response.json();
+  if(response.ok){
+    return counterNum.map((e) => ({
+      id : e.id,
+      name : e.name,
+      counter : e.counter,
+      date: e.date,
+       number : e.number}));
+   } else {
+     throw counterNum;
    }
  }
 
-const API = {logIn, logOut, getUserInfo, getCounterDetails, listServices, removeServiceToCounter, addServiceToCounter};
+  /*
+  * Get the number of the counter
+  */
+  async function getCounterNumber() {
+    console.log("API")
+    const response = await fetch(URL + `/counter/number`);
+    const counterNum = await response.json();
+    console.log(counterNum);
+    if(response.ok){
+      return counterNum.map((e) => ({
+        id : e.id,
+        name : e.name,}));
+     } else {
+       throw counterNum;
+     }
+}
+
+const API = {logIn, logOut, getUserInfo, getCounterDetails, listServices, removeServiceToCounter, addServiceToCounter, getCounterNumber};
 
 export default API;

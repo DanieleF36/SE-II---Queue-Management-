@@ -9,14 +9,21 @@ const db = new sqlite.Database('db.sqlite', (err) => {
 
 exports.listServices = () =>{
     return new Promise((resolve, reject) => {
-        const sql = 'SELECT S.name, S.averageTime FROM service S ';
+        const sql = 'SELECT service.id AS id, code, name, current, last, averageTime FROM service ';
         db.all(sql, [], (err, rows) => {
             if (err) {
                 reject(err);
                 return;
             }
-            const pages = rows.map((e) => ({name: e.name, averageTime: e.averageTime}));
-            resolve(pages);
+            const services = rows.map((e) => ({
+                id : e.id,
+                code : e.code,
+                name: e.name,
+                current : parseInt(e.current),
+                last: parseInt(e.last),
+                averageTime: e.averageTime
+            }));
+            resolve(services);
         });
     });
 };
@@ -148,16 +155,38 @@ exports.incrementNumberCustomerService = (counterID, serviceName) => {
 }
 //10/26/2023
 exports.getCounterDetails = () =>{
-    console.log("dao.js");
     return new Promise((resolve, reject) => {
-        const sql = 'SELECT SC.code, SC.name, SC.averageTime FROM service SC ';
+        const sql = 'SELECT id, service, counter,date,number FROM counter ';
         db.all(sql, [], (err, rows) => {
             if (err) {
                 reject(err);
                 return;
             }
-            // const pages = rows.map((e) => ({counter: e.counter, service: e.service, officer_id : e.officer_id}));
-            resolve(rows);
+            const counter = rows.map((e) => ({
+                id : e.id,
+                name : e.name,
+                counter : e.counter,
+                date: e.date,
+                number : e.number
+            }));
+            resolve(counter);
+        });
+    });
+};
+
+exports.getCounterNumber = () =>{
+    return new Promise((resolve, reject) => {
+        const sql = 'SELECT id, name FROM counter ';
+        db.all(sql, [], (err, rows) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            const counter = rows.map((e) => ({
+                id : e.id,
+                name : e.name
+            }));
+            resolve(counter);
         });
     });
 };

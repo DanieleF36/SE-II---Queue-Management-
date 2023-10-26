@@ -12,12 +12,12 @@ function Homepage(props) {
 
   const [services, setServices] = useState(['shipping', 'fee paymenyts', 'financial consulence', 'info desk']);
   const [selservice, setSelService] = useState('shipping');
-  const [counterid, setCounterId] = useState('1');
   const [counterSer, setCounterSer] = useState(['shipping', 'fee paymenyts']);
+  const [options, setOptions] = useState([])
   const [officer, setOfficer] = useState([])
   const [rows, setRows] = useState([])
   const [counter, setCounter] = useState();
-
+  const [counterInfo, setCounterInfo] = useState([])
   const handleCounterChange = (event) => {
     // Update the counter state with the selected value
     setCounter(event.target.value);
@@ -32,13 +32,6 @@ function Homepage(props) {
 
   const [selectedOptions, setSelectedOptions] = useState([]);
 
-  const options = [
-    { value: 'option1', label: 'Option 1' },
-    { value: 'option2', label: 'Option 2' },
-    { value: 'option3', label: 'Option 3' },
-    { value: 'option4', label: 'Option 4' },
-  ];
-
   const handleOptionChange = (optionValue) => {
     if (selectedOptions.includes(optionValue)) {
       setSelectedOptions(selectedOptions.filter((value) => value !== optionValue));
@@ -50,7 +43,10 @@ function Homepage(props) {
   const [showOptions, setShowOptions] = useState(false);
 
   const handleShowOptions = () => {
-    setShowOptions(true);
+    if (showOptions == false)
+      setShowOptions(true);
+    else 
+      setShowOptions(false);
   };
 
   useEffect(() => {
@@ -58,11 +54,13 @@ function Homepage(props) {
     API.getCounterDetails().then((rows) => {
       setRows(rows);
     })
-    console.log(rows);
-    console.log("asd");
+    API.listServices().then((s) => {
+      setOptions(s)
+    });
+    API.getCounterNumber().then((c) =>{
+      setCounterInfo(c);
+    })
   }, []);
-
-
 
   return (
     props.user ? props.user.role === 'admin' ? <div className='background-image-container'>
@@ -78,13 +76,7 @@ function Homepage(props) {
           </thead>
           <tbody>
             <tr>
-              {rows.map((r, index) => (
-                <tr key={index}>
-                  <td>{r.code}</td>
-                  <td>{r.name}</td>
-                  <td>{r.averageTime}</td>
-                </tr>
-              ))}
+
             </tr>
           </tbody>
         </Table>
@@ -94,28 +86,26 @@ function Homepage(props) {
           <Col>
             <Form.Select aria-label="Default select example" onChange={handleCounterChange}>
               <option>Select the counter</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
+              {counterInfo.map((ci) => (
+                  <option key={ci.name} value={ci.value}></option>
+              ))}
             </Form.Select>
           </Col>
           <Col>
             <Button onClick={handleShowOptions}>Show Options</Button>
-            {showOptions && (
+                {showOptions && (
               <div>
                 {options.map((option) => (
                   <Form.Check
-                    key={option.value}
-                    type="checkbox"
-                    id={option.value}
-                    label={option.label}
-                    checked={selectedOptions.includes(option.value)}
-                    onChange={() => handleOptionChange(option.value)}
-                  />
-                ))}
-              </div>
-            )}
-
+                  key={option.name}
+                  type="checkbox"
+                  label={option.name}
+                  checked={selectedOptions.includes(option.name)}
+                  onChange={() => handleOptionChange(option.name)}
+                />
+              ))}
+            </div>
+          )}
           </Col>
           <Col>
             <Form.Select aria-label="Default select example" onChange={handleOfficerChange}>

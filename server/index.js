@@ -181,14 +181,33 @@ app.delete('/api/sessions/current', (req, res) => {
     req.logout( ()=> { res.end(); } );
 });
 
-app.get('/api/counter', (req, res) => {  
-    console.log("indexxx");
-    dao.getCounterDetails().then((result) => {
-        res.status(200).json(result);
-    }).catch((error) => {
-        res.status(500).send(error.message);
-    })
+app.get('/api/counter', async (req, res) => {  
+    try{
+        const counter = await dao.getCounterDetails();
+        res.status(200).json(counter);
+        }catch(error){
+        res.status(500).end();
+    }
+});
 
+ app.get('/api/counter/number', async (req, res) => {
+    try{
+        console.log("PROVA")
+        const counterNum = await dao.getCounterNumber();
+        console.log("RRRRRR")
+        res.status(200).json(counterNum);
+        }catch(error){
+        res.status(500).end();
+    }
+});
+
+app.get('/api/services', async (req, res) => {  
+    try{
+        const services = await dao.listServices();
+        res.status(200).json(services);
+        }catch(error){
+        res.status(500).end();
+    }
 });
 
 const PORT = 3001;
