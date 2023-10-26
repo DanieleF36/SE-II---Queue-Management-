@@ -63,7 +63,7 @@ exports.listServicesByCounter = (id) =>{
 //Return the current code ticket for all services
 exports.queuesState = (services) => {
     return new Promise((resolve, reject) => {
-        let sql = 'SELECT S.name, S.current, S.last, S.averageTime FROM service S WHERE S.name = ?';
+        let sql = 'SELECT S.name, S.current, S.last, S.averageTime, S.code FROM service S WHERE S.name = ?';
         let params = [];
         for( let s of services) {
             sql += ' OR S.name = ?';
@@ -74,7 +74,7 @@ exports.queuesState = (services) => {
                 reject(err);
                 return;
             }
-            const pages = rows.map((e) => ({name:e.name, current: e.current, last: e.last, averageTime: e.averageTime}));
+            const pages = rows.map((e) => ({name:e.name, current: e.current, last: e.last, averageTime: e.averageTime, code: e.code}));
             resolve(pages);
         });
     });
@@ -82,7 +82,7 @@ exports.queuesState = (services) => {
 
 exports.updateQueue = (service) => {
     return new Promise((resolve, reject) => {
-        const sql = 'UPDATE service SET current = current+1 WHERE name = ?';
+        const sql = 'UPDATE service SET current = current+1 WHERE code = ?';
         db.run(sql, [service], (err, rows) => {
             if (err) {
                 reject(err);
