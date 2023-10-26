@@ -39,7 +39,19 @@ async function logIn(credentials) {
       throw userInfo;
     }
   }
-  
+
+async function nextCustomer(idCounter) {
+  const response = await fetch(URL + '/api/nextCustomer/'+idCounter, {
+    method: 'PUT',
+    credentials: 'include'
+  });
+  const userInfo = await response.json();
+  if (response.ok) {
+    return userInfo;
+  } else {
+    throw userInfo;
+  }
+}
 
 const API = {logIn, logOut, getUserInfo};
 

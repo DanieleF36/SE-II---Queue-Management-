@@ -7,8 +7,8 @@ import './Login.css';
 import API from '../API';
 
 function Login(props) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('administrator@email.com');
+  const [password, setPassword] = useState('Polito23');
   const [errorMessage, setErrorMessage] = useState('');
 
   const navigate = useNavigate();
@@ -21,6 +21,7 @@ function Login(props) {
         navigate(`/`);
       })
       .catch(err => {
+        console.log(user);
         setErrorMessage('Wrong username or password');
       })
   }
@@ -46,7 +47,7 @@ function Login(props) {
 
   return (
     <div className='background-image-container'>
-      <CustomNavbar />
+      <CustomNavbar ticket={props.ticket} selservice={props.selservice} loggedIn={props.loggedIn} user={props.user}/>
       <Container>
         <Row>
           <Col xs={3}></Col>
