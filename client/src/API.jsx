@@ -40,6 +40,17 @@ async function logIn(credentials) {
     }
   }
 
+  async function getServicesByCounter(id) {
+    const response = await fetch(URL + `/servicesbycounter/${id}`, {
+    });
+    const services = await response.json();
+    if (response.ok) {
+      return services;
+    } else {
+      throw services;
+    }
+  }
+
 async function nextCustomer(idCounter) {
   const response = await fetch(URL + '/nextCustomer/'+idCounter, {
     method: 'PUT',
@@ -97,6 +108,6 @@ function incrLast(id) {
 }
 
 
-const API = {logIn, logOut, getUserInfo, nextCustomer, incrLast, getService, listServices};
+const API = {logIn, logOut, getUserInfo, nextCustomer, incrLast, getService, listServices, getServicesByCounter};
 
 export default API;

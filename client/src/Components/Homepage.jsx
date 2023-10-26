@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CustomNavbar from './CustomNavbar'
+import API from '../API';
 import "./Login.css";
 
 
@@ -11,7 +12,7 @@ function Homepage(props) {
 
   const [selservice, setSelService] = useState('unselected');
   const [counterid, setCounterId] = useState('1');
-  const [counterSer, setCounterSer] = useState(['shipping', 'fee paymenyts']);
+  const [counterSer, setCounterSer] = useState([]);
 
 
   const navigate = useNavigate();
@@ -19,7 +20,12 @@ function Homepage(props) {
 
 
   useEffect(() => {
-    //adding API from backend
+    API.getServicesByCounter(1)
+        .then((serv) => {
+        setCounterSer(serv.map(e=>e.service));
+      })
+      .catch((err) => handleError(err));
+  
 
   }, []);
 
