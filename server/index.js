@@ -63,6 +63,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+
 app.get('/api/nextCustomer/:id', [
     check('id').isInt({min: 0})
 ], async (req, res) => {
