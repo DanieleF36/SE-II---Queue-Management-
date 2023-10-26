@@ -46,9 +46,15 @@ GET /api/nextcustomer
 
 
 Database Tables
+
 Table counter  : (id,name)
+
 Table  user: (id,email,username,name,surname,salt,passwword,role)
+
 Table service : (id,text,name,current numeric,last numeric,averaage time)
+
 Table servicebycounter : (id,counter,ervice,office_id)
+
 Table counterstats :(id,service,counter,date,number)
+
 Table servicestats:(id,service,data,number)
