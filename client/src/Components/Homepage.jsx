@@ -50,6 +50,13 @@ function Homepage(props) {
       setShowOptions(false);
   };
 
+  const handleCounterAdd = () => {
+    console.log(counter)
+    console.log(selectedOptions)
+    console.log(officer)
+    API.addServiceToCounter(counter, selectedOptions[0], officer)
+  };
+
   useEffect(() => {
     //adding API from backend
     API.getCounterDetails().then((rows) => {
@@ -66,7 +73,8 @@ function Homepage(props) {
     })
   }, []);
 
-  console.log(officerInfo)
+  console.log(rows)
+  
   return (
     props.user ? props.user.role === 'admin' ? <div className='background-image-container'>
       <CustomNavbar ticket={props.ticket} selservice={props.selservice} loggedIn={props.loggedIn} user={props.user} />
@@ -81,7 +89,7 @@ function Homepage(props) {
           </thead>
           <tbody>
             <tr>
-
+              {rows.officer}
             </tr>
           </tbody>
         </Table>
@@ -89,7 +97,7 @@ function Homepage(props) {
       <Container>
         <Row>
           <Col>
-            <Form.Select aria-label="Select an option" onChange={handleCounterChange}>
+            <Form.Select aria-label="Select an option" onClick={handleCounterChange}>
                   {counterInfo.map((value) => (
                     <option key={value.id}>
                       {value.id}
@@ -114,7 +122,7 @@ function Homepage(props) {
           )}
           </Col>
           <Col>
-          <Form.Select aria-label="Select an option" onChange={handleCounterChange}>
+          <Form.Select aria-label="Select an option" onClick={handleOfficerChange}>
                   {officerInfo.map((value) => (
                     <option key={value.id}>
                       {value.id}
@@ -125,7 +133,7 @@ function Homepage(props) {
         </Row>
         <Row >
           <div className="mb-2 d-flex justify-content-center">
-            <Button variant="primary" size="lg">
+            <Button variant="primary" size="lg" onClick={handleCounterAdd}>
               Confirm
             </Button>{' '}
             <Button variant="secondary" size="lg" onClick={() => window.location.reload()}>

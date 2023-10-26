@@ -42,15 +42,15 @@ exports.listServicesByCounter = (id) =>{
     });
 };
 
-exports.addServiceToCounter = (counterId, serviceName) => {
+exports.addServiceToCounter = (counterId, serviceName,officerId) => {
     return new Promise((resolve, reject) => {
-        const sql = 'INSERT INTO servicesByCounter(counter, service) VALUES (?,?)';
-        db.run(sql, [counterId, serviceName], (err, rows) => {
+        const sql = 'INSERT INTO servicesByCounter(counter, service, officer_id) VALUES(?,?,?)';
+        db.run(sql, [counterId, serviceName, officerId], (err) => {
             if (err) {
-                reject(err);
+                reject(err.message);
                 return;
             }
-            resolve(this.lastID);
+            resolve(true);
         });
     });
 }
@@ -156,20 +156,13 @@ exports.incrementNumberCustomerService = (counterID, serviceName) => {
 //10/26/2023
 exports.getCounterDetails = () =>{
     return new Promise((resolve, reject) => {
-        const sql = 'SELECT id, service, counter,date,number FROM counterStats ';
+        const sql = 'SELECT id, counter, service, officer_id FROM servicesByCounter ';
         db.all(sql, [], (err, rows) => {
             if (err) {
                 reject(err);
                 return;
             }
-            const counter = rows.map((e) => ({
-                id : e.id,
-                name : e.name,
-                counter : e.counter,
-                date: e.date,
-                number : e.number
-            }));
-            resolve(counter);
+            resolve(rows);
         });
     });
 };
@@ -203,3 +196,4 @@ exports.getOfficer = () =>{
         });
     });
 };
+

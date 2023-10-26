@@ -217,5 +217,17 @@ app.get('/api/officer', async (req, res) => {
     }
 });
 
+app.post('/api/add', async (req, res) => {  
+    try{
+        const counter = req.body.counter;
+        const service = req.body.service;
+        const officer_id = req.body.officer_id
+        await dao.addServiceToCounter(counter,service,officer_id);
+        res.status(200).json(true);
+        }catch(error){
+        res.status(500).end();
+    }
+});
+
 const PORT = 3001;
 app.listen(PORT, ()=>console.log(`Server running on http://localhost:${PORT}`));
