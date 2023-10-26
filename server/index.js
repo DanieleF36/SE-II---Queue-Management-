@@ -52,7 +52,7 @@ const isLoggedIn = (req, res, next) => {
 }
 const answerDelay = 300;
 //Number of total counter, usable for checking
-const nCounter = 3;
+const nCounter = 1;
 
 app.use(session({
     secret:'anjndaljjahuiq8989',
@@ -83,6 +83,52 @@ app.get('/api/pages/:id', [
         res.status(500).end();
     }
 });
+
+// GET /api/services/
+app.get('/api/services', async (req, res) => {
+    try {
+      const services = await dao.listServices();
+      res.json(services);
+    } catch(err) {
+      console.log(err);
+      res.status(500).end();
+    }
+  });
+
+// GET /api/services/<id>
+app.get('/api/services/:id', async (req, res) => {
+    try {
+      const result = await dao.getService(req.params.id);
+      if(result.error)
+        res.status(404).json(result);
+      else
+        res.json(result);
+    } catch(err) {
+      console.log(err);
+      res.status(500).end();
+    }
+  });
+
+
+// POST /api/services/<id>
+app.post('/api/services/:id', [
+    check('id').isInt(),
+  ], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({errors: errors.array()});
+    }
+  
+    try {
+      const numRowChanges = await dao.incrLast(req.params.id);
+      // number of changed rows is sent to client as an indicator of success
+      setTimeout(()=>res.json(numRowChanges), answerDelay);
+    } catch (err) {
+      console.log(err);
+      res.status(503).json({ error: `Database error during the increment ${req.params.id}.` });
+    }
+  
+  });
 
 app.post('/api/auth/pages', isLoggedIn, [
     check('title').isLength({min:1}),

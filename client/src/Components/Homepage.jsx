@@ -4,12 +4,13 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CustomNavbar from './CustomNavbar'
 import "./Login.css";
+import API from './../API';
 
 
 
 function Homepage(props) {
 
-  const [services, setServices] = useState(['shipping', 'fee paymenyts', 'financial consulence', 'info desk']);
+ 
   const [selservice, setSelService] = useState('shipping');
   const [counterid, setCounterId] = useState('1');
   const [counterSer, setCounterSer] = useState(['shipping', 'fee paymenyts']);
@@ -19,10 +20,7 @@ function Homepage(props) {
 
 
 
-  useEffect(() => {
-    //adding API from backend
-
-  }, []);
+ 
 
 
 
@@ -64,12 +62,12 @@ function Homepage(props) {
             <h3>Select a service:</h3>
             <div className="container d-flex align-items-center justify-content-center">
               <DropdownButton variant='success' id="dropdown-basic-button" title={selservice}>
-                {services.map((service, index) => (
+                {props.services.map((e) => (
                   <Dropdown.Item
-                    key={index}
-                    onClick={() => setSelService(service)}
+                    key={e.id}
+                    onClick={() => setSelService(e.name)}
                   >
-                    {service}
+                    {e.name}
                   </Dropdown.Item>
                 ))}
               </DropdownButton>
