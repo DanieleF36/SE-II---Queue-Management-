@@ -82,7 +82,7 @@ exports.queuesState = (services) => {
 
 exports.updateQueue = (service) => {
     return new Promise((resolve, reject) => {
-        const sql = 'UPDATE service SET last = last+1 WHERE name = ?';
+        const sql = 'UPDATE service SET current = current+1 WHERE name = ?';
         db.run(sql, [service], (err, rows) => {
             if (err) {
                 reject(err);

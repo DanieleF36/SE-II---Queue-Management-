@@ -163,9 +163,7 @@ app.put('/api/nextCustomer/:id', [
     }
     try {
         const services = await dao.listServicesByCounter(req.params.id);
-        console.log("services "+JSON.stringify(services));
         const queueState = await dao.queuesState(services);
-        console.log("queueState "+JSON.stringify(queueState))
         let max = -1;
         let averageTime = -1;
         let next = -1;
@@ -186,9 +184,8 @@ app.put('/api/nextCustomer/:id', [
                 name = i.name;
             }
         }
-        console.log("name = "+name+" next = "+next);
         await dao.updateQueue(name);
-        res.json({service: name, nextCustomer: name+next});
+        res.status(200).json({service: name, nextCustomer: name+next});
     } catch(err) {
         console.log(err);
         res.status(500).json({errors: ["Database error"]});
