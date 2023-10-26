@@ -50,7 +50,7 @@ function App() {
             e.last++;
             setTicket('1'+ e.code + e.last);
             setTicketC('1'+e.code+ e.current);
-            setTicketD(2);
+            setTicketD(e.last-e.current);
           return Object.assign({}, e);
         } else {
           return e;
