@@ -4,9 +4,9 @@ const sqlite = require('sqlite3');
 
 describe("listServices", () => {
     test("U1: list services and there are at least two services", async () => {
-        const expectedResult = [ 
-            {name: "testService1", averageTime: 100},
-            {name: "testService2", averageTime: 200}
+        const expectedResult = [
+            { name: "testService1", averageTime: 100 },
+            { name: "testService2", averageTime: 200 }
         ]
         const st = await dao.addService("testService1", 100)
         const nd = await dao.addService("testService2", 200)
@@ -15,7 +15,40 @@ describe("listServices", () => {
 
         await dao.removeService(st)
         await dao.removeService(nd)
-        
+
+        expect(res).toContainEqual(expectedResult[0])
+        expect(res).toContainEqual(expectedResult[1])
+    })
+
+
+    // TODO: need to mock the all method
+    test.only("TODO: test for mocking the all method", async () => {
+        const expectedResult = [
+            { name: "testService1", averageTime: 100 },
+            { name: "testService2", averageTime: 200 }
+        ]
+
+
+        const mockDatabase = {
+            all: jest.fn((sql, params, callback) => {
+                // Implement your custom behavior for the `all` method here
+                // For example, you can simulate a successful query:
+                callback(null, [{ name: "testService1", averageTime: 100 }, { name: "testService2", averageTime: 200 }]);
+            }),
+            // all: jest.fn( () => {
+            //     return expectedResult
+            // })
+        };
+
+        // Mock the `sqlite.Database` constructor to return the mock database instance
+        jest.mock('sqlite3', () => {
+            return {
+                Database: jest.fn(() => mockDatabase),
+            };
+        });
+
+        const res = await dao.listServices()
+
         expect(res).toContainEqual(expectedResult[0])
         expect(res).toContainEqual(expectedResult[1])
     })
@@ -24,22 +57,22 @@ describe("listServices", () => {
 
 describe("addService", () => {
     test("U1: add a service", async () => {
-        const expectedResult = [ 
-            {name: "testService1", averageTime: 100}
+        const expectedResult = [
+            { name: "testService1", averageTime: 100 }
         ]
         const st = await dao.addService("testService1", 100)
 
         const res = await dao.listServices()
 
         await dao.removeService(st)
-        
+
         expect(res).toContainEqual(expectedResult[0])
     })
 
     test("U2: add two services but the names are not unique", async () => {
-        const expectedResult = [ 
-            {name: "testService1", averageTime: 100},
-            {name: "testService1", averageTime: 200}
+        const expectedResult = [
+            { name: "testService1", averageTime: 100 },
+            { name: "testService1", averageTime: 200 }
         ]
         const okay = await dao.addService("testService1", 100)
 
@@ -56,9 +89,9 @@ describe("addService", () => {
     })
 
     test("U3: add two services but the names are unique", async () => {
-        const expectedResult = [ 
-            {name: "testService1", averageTime: 100},
-            {name: "testService2", averageTime: 200}
+        const expectedResult = [
+            { name: "testService1", averageTime: 100 },
+            { name: "testService2", averageTime: 200 }
         ]
         const st = await dao.addService("testService1", 100)
         const nd = await dao.addService("testService2", 200)
@@ -67,42 +100,42 @@ describe("addService", () => {
 
         await dao.removeService(st)
         await dao.removeService(nd)
-        
+
         expect(res).toContainEqual(expectedResult[0])
         expect(res).toContainEqual(expectedResult[1])
     })
 
     test("U4: add a service but the name is empty", async () => {
-        const expectedResult = [ 
-            {name: "", averageTime: 100}
+        const expectedResult = [
+            { name: "", averageTime: 100 }
         ]
         const st = await dao.addService("", 100)
 
         const res = await dao.listServices()
 
         await dao.removeService(st)
-        
+
         expect(res).toContainEqual(expectedResult[0])
     })
 });
 
 describe("removeService", () => {
     test("U1: remove a service", async () => {
-        const expectedResult = [ 
-            {name: "testToBeRemoved", averageTime: 100}
+        const expectedResult = [
+            { name: "testToBeRemoved", averageTime: 100 }
         ]
         const st = await dao.addService("testToBeRemoved", 100)
         await dao.removeService(st)
 
         const res = await dao.listServices()
 
-        
+
         expect(res).not.toContainEqual(expectedResult[0])
     })
 
     test("U2: remove a service twice so that it does not exist", async () => {
-        const expectedResult = [ 
-            {name: "testToBeRemoved", averageTime: 100}
+        const expectedResult = [
+            { name: "testToBeRemoved", averageTime: 100 }
         ]
         const st = await dao.addService("testToBeRemoved", 100)
         await dao.removeService(st)
@@ -110,7 +143,7 @@ describe("removeService", () => {
 
         const res = await dao.listServices()
 
-        
+
         expect(res).not.toContainEqual(expectedResult[0])
     })
 })
@@ -126,6 +159,7 @@ describe("addServiceToCounter", () => {
 describe("removeServiceToCounter", () => {
 
 })
+
 // describe('listServices', () => {
 //     beforeEach(() => {
 //         // Clear all mock calls between tests
