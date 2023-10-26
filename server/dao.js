@@ -21,6 +21,32 @@ exports.listServices = () =>{
     });
 };
 
+exports.addService = (name, avgTime) =>{
+    return new Promise((resolve, reject) => {
+        const sql = 'INSERT INTO service(name, averageTime) VALUES(?, ?)';
+        db.run(sql, [name, avgTime], function(err) {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve(this.lastID)
+        });
+    });
+};
+
+exports.removeService = (id) =>{
+    return new Promise((resolve, reject) => {
+        const sql = 'DELETE FROM service WHERE id = ?'
+        db.run(sql, [id], (err) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+        });
+        resolve(true)
+    });
+};
+
 exports.listServicesByCounter = (id) =>{
     return new Promise((resolve, reject) => {
         const sql = 'SELECT S.service FROM servicesByCounter S WHERE S.counter = ?';
@@ -34,6 +60,38 @@ exports.listServicesByCounter = (id) =>{
         });
     });
 };
+//Return the current code ticket for all services
+exports.queuesState = (services) => {
+    return new Promise((resolve, reject) => {
+        let sql = 'SELECT S.name, S.current, S.last, S.averageTime FROM service S WHERE S.name = ?';
+        let params = [];
+        for( let s of services) {
+            sql += ' OR S.name = ?';
+            params.push(s.service);
+        }
+        db.all(sql, params, (err, rows) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            const pages = rows.map((e) => ({name:e.name, current: e.current, last: e.last, averageTime: e.averageTime}));
+            resolve(pages);
+        });
+    });
+};
+
+exports.updateQueue = (service) => {
+    return new Promise((resolve, reject) => {
+        const sql = 'UPDATE service SET current = current+1 WHERE name = ?';
+        db.run(sql, [service], (err, rows) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve(this.lastID);
+        });
+    });
+}
 
 exports.addServiceToCounter = (counterId, serviceName) => {
     return new Promise((resolve, reject) => {

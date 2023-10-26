@@ -154,6 +154,44 @@ app.post('/api/auth/pages', isLoggedIn, [
         }
 });
 
+app.put('/api/nextCustomer/:id', [
+    check('id').isInt({min: 0})
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({errors: errors.array()});
+    }
+    try {
+        const services = await dao.listServicesByCounter(req.params.id);
+        const queueState = await dao.queuesState(services);
+        let max = -1;
+        let averageTime = -1;
+        let next = -1;
+        let name = '';
+        for(let i of queueState){
+            if(i.last - i.current >= max) {
+                max = i.last - i.current;
+                averageTime = i.averageTime;
+                next = i.current +1;
+                name = i.name;
+            }
+        }
+        for(let i of queueState){
+            if(i.last - i.current == max && i.averageTime < averageTime) {
+                averageTime = i.averageTime;
+                max = i.last - i.current;
+                next = i.current +1;
+                name = i.name;
+            }
+        }
+        await dao.updateQueue(name);
+        res.status(200).json({service: name, nextCustomer: name+next});
+    } catch(err) {
+        console.log(err);
+        res.status(500).json({errors: ["Database error"]});
+    }
+});
+
 /** ******************************************************************************************************************************************* **/
 
 app.post('/api/sessions', function(req, res, next) {
