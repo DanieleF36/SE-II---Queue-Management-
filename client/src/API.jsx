@@ -49,6 +49,9 @@ async function logIn(credentials) {
    try {
      const response = await fetch(URL + `/add`, {
        method: "POST",
+       headers: {
+        'Content-Type': 'application/json',
+        },
        body: JSON.stringify({
          counter: counterId,
          service: serviceName,

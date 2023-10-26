@@ -51,9 +51,6 @@ function Homepage(props) {
   };
 
   const handleCounterAdd = () => {
-    console.log(counter)
-    console.log(selectedOptions)
-    console.log(officer)
     API.addServiceToCounter(counter, selectedOptions[0], officer)
   };
 
@@ -73,7 +70,9 @@ function Homepage(props) {
     })
   }, []);
 
-  console.log(rows)
+  console.log(counter)
+    console.log(selectedOptions)
+    console.log(officer)
   
   return (
     props.user ? props.user.role === 'admin' ? <div className='background-image-container'>
@@ -143,6 +142,7 @@ function Homepage(props) {
             <Button variant="secondary" size="lg" onClick={() => window.location.reload()}>
               Cancel
             </Button>
+            <Button variant="danger" >Danger</Button>{' '}
           </div>
         </Row>
       </Container>
