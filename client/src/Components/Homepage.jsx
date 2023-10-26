@@ -1,9 +1,10 @@
-import { Form, Button, Alert, Container, Row, Col, Dropdown, DropdownButton } from 'react-bootstrap';
+import { Form, Button, Alert, Container, Row, Col, Dropdown, DropdownButton, Table } from 'react-bootstrap';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CustomNavbar from './CustomNavbar'
 import "./Login.css";
+import API from '../API';
 
 
 
@@ -13,15 +14,52 @@ function Homepage(props) {
   const [selservice, setSelService] = useState('shipping');
   const [counterid, setCounterId] = useState('1');
   const [counterSer, setCounterSer] = useState(['shipping', 'fee paymenyts']);
+  const [officer, setOfficer] = useState([])
+  const [rows, setRows] = useState([])
+  const [counter, setCounter] = useState();
 
+  const handleCounterChange = (event) => {
+    // Update the counter state with the selected value
+    setCounter(event.target.value);
+  };
+
+  const handleOfficerChange = (event) => {
+    // Update the counter state with the selected value
+    setOfficer(event.target.value);
+  };
 
   const navigate = useNavigate();
 
+  const [selectedOptions, setSelectedOptions] = useState([]);
 
+  const options = [
+    { value: 'option1', label: 'Option 1' },
+    { value: 'option2', label: 'Option 2' },
+    { value: 'option3', label: 'Option 3' },
+    { value: 'option4', label: 'Option 4' },
+  ];
+
+  const handleOptionChange = (optionValue) => {
+    if (selectedOptions.includes(optionValue)) {
+      setSelectedOptions(selectedOptions.filter((value) => value !== optionValue));
+    } else {
+      setSelectedOptions([...selectedOptions, optionValue]);
+    }
+  };
+
+  const [showOptions, setShowOptions] = useState(false);
+
+  const handleShowOptions = () => {
+    setShowOptions(true);
+  };
 
   useEffect(() => {
     //adding API from backend
-
+    API.getCounterDetails().then((rows) => {
+      setRows(rows);
+    })
+    console.log(rows);
+    console.log("asd");
   }, []);
 
 
@@ -29,11 +67,77 @@ function Homepage(props) {
   return (
     props.user ? props.user.role === 'admin' ? <div className='background-image-container'>
       <CustomNavbar ticket={props.ticket} selservice={props.selservice} loggedIn={props.loggedIn} user={props.user} />
-      <Container className="d-flex align-items-center justify-content-center" style={{ marginTop: '50px' }}>
-        <div>
-          <h1>Welcome OQM Website!!! - (Administrator View)</h1>
-        </div>
+      <Container className="d-flex align-items-center justify-content-center" style={{ marginTop: '50px', width: '100%' }}>
+        <Table >
+          <thead>
+            <tr>
+              <th>Counter</th>
+              <th>Services</th>
+              <th>Officer Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              {rows.map((r, index) => (
+                <tr key={index}>
+                  <td>{r.code}</td>
+                  <td>{r.name}</td>
+                  <td>{r.averageTime}</td>
+                </tr>
+              ))}
+            </tr>
+          </tbody>
+        </Table>
       </Container>
+      <Container>
+        <Row>
+          <Col>
+            <Form.Select aria-label="Default select example" onChange={handleCounterChange}>
+              <option>Select the counter</option>
+              <option value="1">One</option>
+              <option value="2">Two</option>
+              <option value="3">Three</option>
+            </Form.Select>
+          </Col>
+          <Col>
+            <Button onClick={handleShowOptions}>Show Options</Button>
+            {showOptions && (
+              <div>
+                {options.map((option) => (
+                  <Form.Check
+                    key={option.value}
+                    type="checkbox"
+                    id={option.value}
+                    label={option.label}
+                    checked={selectedOptions.includes(option.value)}
+                    onChange={() => handleOptionChange(option.value)}
+                  />
+                ))}
+              </div>
+            )}
+
+          </Col>
+          <Col>
+            <Form.Select aria-label="Default select example" onChange={handleOfficerChange}>
+              <option>Select the officer</option>
+              <option value="1">One</option>
+              <option value="2">Two</option>
+              <option value="3">Three</option>
+            </Form.Select>
+          </Col>
+        </Row>
+        <Row >
+          <div className="mb-2 d-flex justify-content-center">
+            <Button variant="primary" size="lg">
+              Confirm
+            </Button>{' '}
+            <Button variant="secondary" size="lg" onClick={() => window.location.reload()}>
+              Cancel
+            </Button>
+          </div>
+        </Row>
+      </Container>
+
     </div>
       : <div className='background-image-container'>
         <CustomNavbar ticket={props.ticket} selservice={props.selservice} loggedIn={props.loggedIn} user={props.user} />
@@ -48,8 +152,8 @@ function Homepage(props) {
             </Col>
 
             <Col xs={6}><div style={{ marginTop: '20px' }} className="d-flex align-items-center justify-content-center">
-            <h5>Press the button to call the next customer:</h5>
-              <Button style={{marginLeft:'10px'}} variant="success" size="lg" className="btn-lg" onClick={()=>{props.handleNextCustomer(); navigate('/');}}>
+              <h5>Press the button to call the next customer:</h5>
+              <Button style={{ marginLeft: '10px' }} variant="success" size="lg" className="btn-lg" onClick={() => { props.handleNextCustomer(); navigate('/'); }}>
                 Next Customer
               </Button>
             </div></Col>

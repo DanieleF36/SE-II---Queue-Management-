@@ -146,3 +146,18 @@ exports.incrementNumberCustomerService = (counterID, serviceName) => {
         });
     });
 }
+//10/26/2023
+exports.getCounterDetails = () =>{
+    console.log("dao.js");
+    return new Promise((resolve, reject) => {
+        const sql = 'SELECT SC.code, SC.name, SC.averageTime FROM service SC ';
+        db.all(sql, [], (err, rows) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            // const pages = rows.map((e) => ({counter: e.counter, service: e.service, officer_id : e.officer_id}));
+            resolve(rows);
+        });
+    });
+};

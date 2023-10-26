@@ -181,6 +181,15 @@ app.delete('/api/sessions/current', (req, res) => {
     req.logout( ()=> { res.end(); } );
 });
 
+app.get('/api/counter', (req, res) => {  
+    console.log("indexxx");
+    dao.getCounterDetails().then((result) => {
+        res.status(200).json(result);
+    }).catch((error) => {
+        res.status(500).send(error.message);
+    })
+
+});
 
 const PORT = 3001;
-app.listen(PORT, ()=>console.log(`Server running on http://localhost:${PORT}/`));
+app.listen(PORT, ()=>console.log(`Server running on http://localhost:${PORT}`));
