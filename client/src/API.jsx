@@ -1,41 +1,46 @@
 import dayjs from "dayjs";
 
-const URL = 'http://localhost:3001/api/';
+const URL = 'http://localhost:3001/api';
 
-async function getAllPublishedPages(){
-    const res = await fetch(URL+"pages");
-    const pages = await res.json();
-    if (res.ok) {
-        return pages.map((e) => (new Pages(e.id, e.title,e.author, -1, undefined, dayjs(e.publicationDate))));
+
+async function logIn(credentials) {
+    let response = await fetch(URL + '/sessions', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(credentials),
+    });
+    if (response.ok) {
+      const user = await response.json();
+      return user;
     } else {
-        throw pages;
+      const errDetail = await response.json();
+      throw errDetail.message;
     }
-}
-
-
-async function getOpenedPage(id){
-    const res = await fetch(URL+"pages/"+id);
-    const  page = await res.json();
-    if(res.ok){
-        let p = new Pages(page.id, page.title, page.author,-1, dayjs(page.creationDate), page.publicationDate?dayjs(page.publicationDate):"");
-        page.order.map((e)=>{
-            if(e.text){
-                p.addParagraph(new Paragraph(e.text, e.pos));
-            }
-            else if(e.header){
-                p.addHeader(new Header(e.header, e.pos))
-            }
-            else{
-                p.addImage(new Image(e.url, e.pos, e.id));
-            }
-        })
-        return p;
+  }
+  
+  async function logOut() {
+    await fetch(URL + '/sessions/current', {
+      method: 'DELETE',
+      credentials: 'include'
+    });
+  }
+  
+  async function getUserInfo() {
+    const response = await fetch(URL + '/sessions/current', {
+      credentials: 'include'
+    });
+    const userInfo = await response.json();
+    if (response.ok) {
+      return userInfo;
+    } else {
+      throw userInfo;
     }
-    else {
-        throw page;
-    }
-}
+  }
+  
 
-const API = {};
+const API = {logIn, logOut, getUserInfo};
 
 export default API;

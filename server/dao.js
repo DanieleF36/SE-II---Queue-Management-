@@ -60,6 +60,38 @@ exports.listServicesByCounter = (id) =>{
         });
     });
 };
+//Return the current code ticket for all services
+exports.queuesState = (services) => {
+    return new Promise((resolve, reject) => {
+        let sql = 'SELECT S.name, S.current, S.last, S.averageTime FROM service S WHERE S.name = ?';
+        let params = [];
+        for( let s of services) {
+            sql += ' OR S.name = ?';
+            params.push(s.service);
+        }
+        db.all(sql, params, (err, rows) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            const pages = rows.map((e) => ({name:e.name, current: e.current, last: e.last, averageTime: e.averageTime}));
+            resolve(pages);
+        });
+    });
+};
+
+exports.updateQueue = (service) => {
+    return new Promise((resolve, reject) => {
+        const sql = 'UPDATE service SET last = last+1 WHERE name = ?';
+        db.run(sql, [service], (err, rows) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve(this.lastID);
+        });
+    });
+}
 
 exports.addServiceToCounter = (counterId, serviceName) => {
     return new Promise((resolve, reject) => {
