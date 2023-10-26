@@ -63,6 +63,46 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.get('/api/nextCustomer/:id', [
+    check('id').isInt({min: 0})
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({errors: errors.array()});
+    }
+    try {
+        const services = await dao.listServicesByCounter(req.params.id);
+        console.log("services "+JSON.stringify(services));
+        const queueState = await dao.queuesState(services);
+        console.log("queueState "+JSON.stringify(queueState))
+        let max = -1;
+        let averageTime = -1;
+        let next = -1;
+        let name = '';
+        for(let i of queueState){
+            if(i.current - i.last >= max) {
+                max = i.current - i.last;
+                averageTime = i.averageTime;
+                next = i.last +1;
+                name = i.name;
+            }
+        }
+        for(let i of queueState){
+            if(i.current - i.last == max && i.averageTime < averageTime) {
+                averageTime = i.averageTime;
+                max = i.current - i.last;
+                next = i.last +1;
+                name = i.name;
+            }
+        }
+        console.log("name = "+name+" next = "+next);
+        await dao.updateQueue(name);
+        res.json({service: name, nextCustomer: name+next});
+    } catch(err) {
+        console.log(err);
+        res.status(500).json({errors: ["Database error"]});
+    }
+});
 
 /** ******************************************************************************************************************************************* **/
 
