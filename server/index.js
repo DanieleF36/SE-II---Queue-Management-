@@ -192,6 +192,52 @@ app.put('/api/nextCustomer/:id', [
     }
 });
 
+// GET /api/services/
+app.get('/api/services', async (req, res) => {
+    try {
+      const services = await dao.listServices();
+      res.json(services);
+    } catch(err) {
+      console.log(err);
+      res.status(500).end();
+    }
+  });
+
+// GET /api/services/<id>
+app.get('/api/services/:id', async (req, res) => {
+    try {
+      const result = await dao.getService(req.params.id);
+      if(result.error)
+        res.status(404).json(result);
+      else
+        res.json(result);
+    } catch(err) {
+      console.log(err);
+      res.status(500).end();
+    }
+  });
+
+
+// POST /api/services/<id>
+app.post('/api/services/:id', [
+    check('id').isInt(),
+  ], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({errors: errors.array()});
+    }
+  
+    try {
+      const numRowChanges = await dao.incrLast(req.params.id);
+      // number of changed rows is sent to client as an indicator of success
+      setTimeout(()=>res.json(numRowChanges), answerDelay);
+    } catch (err) {
+      console.log(err);
+      res.status(503).json({ error: `Database error during the increment ${req.params.id}.` });
+    }
+  
+  });
+
 /** ******************************************************************************************************************************************* **/
 
 app.post('/api/sessions', function(req, res, next) {

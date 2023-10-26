@@ -9,17 +9,67 @@ const db = new sqlite.Database('db.sqlite', (err) => {
 
 exports.listServices = () =>{
     return new Promise((resolve, reject) => {
-        const sql = 'SELECT S.name, S.averageTime FROM service S ';
+        const sql = 'SELECT service.id AS id, code, name, current, last, averageTime FROM service';
         db.all(sql, [], (err, rows) => {
             if (err) {
                 reject(err);
                 return;
             }
-            const pages = rows.map((e) => ({name: e.name, averageTime: e.averageTime}));
-            resolve(pages);
+            const services = rows.map((e) => (
+                {
+                    id: e.id, 
+                    code: e.code, 
+                    name: e.name, 
+                    current: parseInt(e.current), 
+                    last: parseInt(e.last), 
+                    averageTime: parseInt(e.averageTime),
+                }));
+            resolve(services);
         });
     });
 };
+// get the service identified by {id}
+exports.getService = (id) => {
+    return new Promise((resolve, reject) => {
+      const sql = 'SELECT service.id AS id, code, name, current, last, averageTime FROM service WHERE service.id=?';
+      db.get(sql, [id], (err, row) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        if (row == undefined) {
+          resolve({error: 'Service not found.'});
+        } else {
+          const service = 
+            {
+                id: row.id, 
+                code: row.code, 
+                name: row.name, 
+                current: parseInt(row.current), 
+                last: parseInt(row.last), 
+                averageTime: parseInt(row.averageTime),
+            };
+          resolve(service);
+        }
+      });
+    });
+  };
+
+  // Increment last in a service
+exports.incrLast = (id) => {
+    return new Promise((resolve, reject) => {
+      const sql = 'UPDATE service SET last = last + 1  WHERE id = ?';
+      db.run(sql, [id], function (err) {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(this.changes);
+      });
+    });
+  };
+  
+
 
 exports.addService = (name, avgTime) =>{
     return new Promise((resolve, reject) => {

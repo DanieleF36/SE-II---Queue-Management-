@@ -12,8 +12,9 @@ function App() {
     const [errorMsg, setErrorMsg] = useState(undefined);
     const [user, setUser] = useState(undefined);
     const [loggedIn, setLoggedIn] = useState(false);
-    const [ticket, setTicket] = useState(undefined);
-    const [ticketC, setTicketC] = useState('1SH1');
+    const [services, setServices] = useState([]);
+    const [ticket, setTicket] = useState('');
+    const [ticketC, setTicketC] = useState(undefined);
     const [ticketD, setTicketD] = useState(undefined);
     const [selservice, setselService] = useState(undefined);
 
@@ -30,17 +31,47 @@ function App() {
       checkAuth();
     }, []);
 
+    useEffect(() => {
+      //adding API from backend
+      API.listServices()
+        .then((services) => {
+        setServices(services);
+      })
+      .catch((err) => handleError(err));
+  
+    }, []);
+
     const handleGetTicket = (selservice) => {
+      let id=0;
       //adding API from backend for updating last customer for that service and retrieving ticket code
-      setTicket('1SH3');
-      setTicketC('1SH1');
-      setTicketD(2);
+      setServices((oldList) => oldList.map((e) => {
+        if (e.name === selservice) {
+            id= e.id;
+            e.last++;
+            setTicket('1'+ e.code + e.last);
+            setTicketC('1'+e.code+ e.current);
+            setTicketD(2);
+          return Object.assign({}, e);
+        } else {
+          return e;
+        }
+      })
+      );
+
+      
+      
       setselService(selservice);
+
+      API.incrLast(id)
+      .then(() => setDirty(true))
+      .catch((err) => handleError(err));
+
+      
     };
 
-    const handleNextCustomer = () => {
-      //adding API from backend for updating current customer and retrieving ticket code 
-      setTicketC('1SH2');
+    const handleNextCustomer = () => { 
+      API.nextCustomer(1).then(e=>setTicket(e.nextCustomer));
+      setTicketC(ticket);
     };
   
     function handleError(err) {
@@ -73,7 +104,7 @@ function App() {
         <>
         <BrowserRouter>
           <Routes>
-            <Route path='/' element={<><Homepage handleNextCustomer={handleNextCustomer} ticketC={ticketC} ticket={ticket} selservice={selservice} handleGetTicket={handleGetTicket} loggedIn={loggedIn} loginSuccessful={loginSuccessful} user={user}/></>} />
+            <Route path='/' element={<><Homepage handleNextCustomer={handleNextCustomer} services={services} ticketC={ticketC} ticket={ticket} selservice={selservice} handleGetTicket={handleGetTicket} loggedIn={loggedIn} loginSuccessful={loginSuccessful} user={user}/></>} />
             <Route path='/:service/ticket' element={<><TicketView ticket={ticket} ticketC={ticketC}  ticketD={ticketD} /></>} />
             <Route path='/login' element={<><Login ticket={ticket} selservice={selservice} loggedIn={loggedIn} loginSuccessful={loginSuccessful} user={user}/></>} />
             <Route path='/logout' element={<><Logout ticket={ticket} selservice={selservice} loggedIn={loggedIn} loginSuccessful={loginSuccessful} user={user} doLogOut={doLogOut}/></>} />
