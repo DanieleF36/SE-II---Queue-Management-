@@ -79,7 +79,7 @@ function Homepage(props) {
     props.user ? props.user.role === 'admin' ? <div className='background-image-container'>
       <CustomNavbar ticket={props.ticket} selservice={props.selservice} loggedIn={props.loggedIn} user={props.user} />
       <Container className="d-flex align-items-center justify-content-center" style={{ marginTop: '50px', width: '100%' }}>
-        <Table >
+        <Table>
           <thead>
             <tr>
               <th>Counter</th>
@@ -88,9 +88,13 @@ function Homepage(props) {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              {rows.officer}
-            </tr>
+            {rows.map((item) => (
+              <tr key={item.id}>
+                <td>{item.counter}</td>
+                <td>{item.service}</td>
+                <td>{item.officer_id}</td>
+              </tr>
+             ))}
           </tbody>
         </Table>
       </Container>
