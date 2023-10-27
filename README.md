@@ -1,8 +1,7 @@
 # SE-II---Queue-Management-
 
 
-
-  React Client Application Routes
+ React Client Application Routes
 
 * Route / (Home Page - Display Full Course List When You Arrive on the Site): 
 This route represents the main page of the website. When users arrive on the site, they will see the complete list of services.
@@ -35,3 +34,9 @@ Altre
 GET /api/courses: route does not require authentication, it can still return a list of services or information about available services.
 
 GET /api/services/<id>: request does not require authentication, it would return specific information about a service identified by <id>
+
+POST /api/services/<id> request requires authentication, it typically means that the user is trying to make a specific modification or take action on the service identified by <id>
+
+GET /api/servicesbycounter/:id  request requires authentication appears to be designed to retrieve information about the services available at a specific counter identified by :id. 
+
+api/nextCustomer/:id  request appears to be designed to retrieve information about the next customer to be served at a specific counter identified by :id.
