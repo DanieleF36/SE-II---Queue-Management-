@@ -41,8 +41,8 @@ Altre
 
 * Put/api/nextCustomer/:id  request appears to be designed to retrieve information about the next customer to be served at a specific counter identified by :id.
 
-
-  Database Tables 
+ Database Tables
+  
 Table counter : (id,name)
 
 Table user: (id,email,username,name,surname,salt,passwword,role)
