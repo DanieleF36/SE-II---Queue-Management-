@@ -19,6 +19,7 @@ function Homepage(props) {
   const [counter, setCounter] = useState();
   const [counterInfo, setCounterInfo] = useState([])
   const [officerInfo, setofficerInfo] = useState([])
+  const [refresh, setRefresh] = useState(true)
   const handleCounterChange = (event) => {
     // Update the counter state with the selected value
     setCounter(event.target.value);
@@ -51,7 +52,10 @@ function Homepage(props) {
   };
 
   const handleCounterAdd = () => {
-    API.addServiceToCounter(counter, selectedOptions[0], officer)
+    selectedOptions.map((option) =>{
+      API.addServiceToCounter(counter, option, officer)
+    })
+    setRefresh(!refresh);
   };
 
   useEffect(() => {
@@ -68,12 +72,8 @@ function Homepage(props) {
     API.getOfficer().then((o)=>{
       setofficerInfo(o);
     })
-  }, []);
+  }, [refresh]);
 
-  console.log(counter)
-    console.log(selectedOptions)
-    console.log(officer)
-  
   return (
     props.user ? props.user.role === 'admin' ? <div className='background-image-container'>
       <CustomNavbar ticket={props.ticket} selservice={props.selservice} loggedIn={props.loggedIn} user={props.user} />
@@ -101,6 +101,7 @@ function Homepage(props) {
         <Row>
           <Col>
             <Form.Select aria-label="Select an option" onClick={handleCounterChange}>
+                <option>Select a counterID</option>
                   {counterInfo.map((value) => (
                     <option key={value.id}>
                       {value.id}
@@ -109,7 +110,7 @@ function Homepage(props) {
             </Form.Select>
           </Col>
           <Col>
-            <Button onClick={handleShowOptions}>Show Options</Button>
+            <Button onClick={handleShowOptions}>Show list of services</Button>
                 {showOptions && (
               <div>
                 {options.map((option) => (
@@ -126,6 +127,7 @@ function Homepage(props) {
           </Col>
           <Col>
           <Form.Select aria-label="Select an option" onClick={handleOfficerChange}>
+          <option>Select an officerID</option>
                   {officerInfo.map((value) => (
                     <option key={value.id}>
                       {value.id}
@@ -142,11 +144,9 @@ function Homepage(props) {
             <Button variant="secondary" size="lg" onClick={() => window.location.reload()}>
               Cancel
             </Button>
-            <Button variant="danger" >Danger</Button>{' '}
           </div>
         </Row>
       </Container>
-
     </div>
       : <div className='background-image-container'>
         <CustomNavbar ticket={props.ticket} selservice={props.selservice} loggedIn={props.loggedIn} user={props.user} />
