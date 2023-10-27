@@ -222,7 +222,9 @@ app.post('/api/add', async (req, res) => {
         const counter = req.body.counter;
         const service = req.body.service;
         const officer_id = req.body.officer_id
-        await dao.addServiceToCounter(counter,service,officer_id);
+        service.forEach( async (s) => {
+            await dao.addServiceToCounter(counter,s,officer_id);
+        })
         res.status(200).json(true);
         }catch(error){
         res.status(500).end();

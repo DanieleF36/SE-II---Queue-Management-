@@ -51,11 +51,9 @@ function Homepage(props) {
       setShowOptions(false);
   };
 
-  const handleCounterAdd = () => {
-    selectedOptions.map((option) =>{
-      API.addServiceToCounter(counter, option, officer)
-    })
-    setRefresh(!refresh);
+  const handleCounterAdd = async () => {
+      await API.addServiceToCounter(counter, selectedOptions, officer)
+      setRefresh(!refresh)
   };
 
   useEffect(() => {
@@ -109,7 +107,7 @@ function Homepage(props) {
               ))}
             </Form.Select>
           </Col>
-          <Col>
+          <Col className="d-flex justify-content-center align-item-center">
             <Button onClick={handleShowOptions}>Show list of services</Button>
                 {showOptions && (
               <div>
@@ -136,8 +134,8 @@ function Homepage(props) {
             </Form.Select>
           </Col>
         </Row>
-        <Row >
-          <div className="mb-2 d-flex justify-content-center">
+        <Row>
+          <div className="mb-2 d-flex justify-content-center" style = {{marginTop : "10px"}}>
             <Button variant="primary" size="lg" onClick={handleCounterAdd}>
               Confirm
             </Button>{' '}
