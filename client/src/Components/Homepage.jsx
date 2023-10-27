@@ -1,10 +1,11 @@
-import { Form, Button, Alert, Container, Row, Col, Dropdown, DropdownButton } from 'react-bootstrap';
+import { Form, Button, Alert, Container, Row, Col, Dropdown, DropdownButton, Table } from 'react-bootstrap';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CustomNavbar from './CustomNavbar'
 import API from '../API';
 import "./Login.css";
+import API from '../API';
 
 
 
@@ -13,11 +14,48 @@ function Homepage(props) {
   const [selservice, setSelService] = useState('unselected');
   const [counterid, setCounterId] = useState('1');
   const [counterSer, setCounterSer] = useState([]);
+  const [options, setOptions] = useState([])
+  const [officer, setOfficer] = useState([])
+  const [rows, setRows] = useState([])
+  const [counter, setCounter] = useState();
+  const [counterInfo, setCounterInfo] = useState([])
+  const [officerInfo, setofficerInfo] = useState([])
+  const [refresh, setRefresh] = useState(true)
+  const handleCounterChange = (event) => {
+    // Update the counter state with the selected value
+    setCounter(event.target.value);
+  };
 
+  const handleOfficerChange = (event) => {
+    // Update the counter state with the selected value
+    setOfficer(event.target.value);
+  };
 
   const navigate = useNavigate();
 
+  const [selectedOptions, setSelectedOptions] = useState([]);
 
+  const handleOptionChange = (optionValue) => {
+    if (selectedOptions.includes(optionValue)) {
+      setSelectedOptions(selectedOptions.filter((value) => value !== optionValue));
+    } else {
+      setSelectedOptions([...selectedOptions, optionValue]);
+    }
+  };
+
+  const [showOptions, setShowOptions] = useState(false);
+
+  const handleShowOptions = () => {
+    if (showOptions == false)
+      setShowOptions(true);
+    else 
+      setShowOptions(false);
+  };
+
+  const handleCounterAdd = async () => {
+      await API.addServiceToCounter(counter, selectedOptions, officer)
+      setRefresh(!refresh)
+  };
 
   useEffect(() => {
     API.getServicesByCounter(1)
@@ -25,19 +63,94 @@ function Homepage(props) {
         setCounterSer(serv.map(e=>e.service));
       })
       .catch((err) => handleError(err));
-  
-
-  }, []);
+      API.getCounterDetails().then((rows) => {
+        setRows(rows);
+      })
+      API.listServices().then((s) => {
+        setOptions(s)
+      });
+      API.getCounterNumber().then((c) =>{
+         setCounterInfo(c);
+      })
+      API.getOfficer().then((o)=>{
+        setofficerInfo(o);
+      })
+    }, [refresh]);
 
 
 
   return (
     props.user ? props.user.role === 'admin' ? <div className='background-image-container'>
       <CustomNavbar ticket={props.ticket} selservice={props.selservice} loggedIn={props.loggedIn} user={props.user} />
-      <Container className="d-flex align-items-center justify-content-center" style={{ marginTop: '50px' }}>
-        <div>
-          <h1>Welcome OQM Website!!! - (Administrator View)</h1>
-        </div>
+      <Container className="d-flex align-items-center justify-content-center" style={{ marginTop: '50px', width: '100%' }}>
+        <Table>
+          <thead>
+            <tr>
+              <th>Counter</th>
+              <th>Services</th>
+              <th>Officer Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((item) => (
+              <tr key={item.id}>
+                <td>{item.counter}</td>
+                <td>{item.service}</td>
+                <td>{item.officer_id}</td>
+              </tr>
+             ))}
+          </tbody>
+        </Table>
+      </Container>
+      <Container>
+        <Row>
+          <Col>
+            <Form.Select aria-label="Select an option" onClick={handleCounterChange}>
+                <option>Select a counterID</option>
+                  {counterInfo.map((value) => (
+                    <option key={value.id}>
+                      {value.id}
+                    </option>
+              ))}
+            </Form.Select>
+          </Col>
+          <Col className="d-flex justify-content-center align-item-center">
+            <Button onClick={handleShowOptions}>Show list of services</Button>
+                {showOptions && (
+              <div>
+                {options.map((option) => (
+                  <Form.Check
+                  key={option.name}
+                  type="checkbox"
+                  label={option.name}
+                  checked={selectedOptions.includes(option.name)}
+                  onChange={() => handleOptionChange(option.name)}
+                />
+              ))}
+            </div>
+          )}
+          </Col>
+          <Col>
+          <Form.Select aria-label="Select an option" onClick={handleOfficerChange}>
+          <option>Select an officerID</option>
+                  {officerInfo.map((value) => (
+                    <option key={value.id}>
+                      {value.id}
+                    </option>
+              ))}
+            </Form.Select>
+          </Col>
+        </Row>
+        <Row>
+          <div className="mb-2 d-flex justify-content-center" style = {{marginTop : "10px"}}>
+            <Button variant="primary" size="lg" onClick={handleCounterAdd}>
+              Confirm
+            </Button>{' '}
+            <Button variant="secondary" size="lg" onClick={() => window.location.reload()}>
+              Cancel
+            </Button>
+          </div>
+        </Row>
       </Container>
     </div>
       : <div className='background-image-container'>
@@ -53,8 +166,8 @@ function Homepage(props) {
             </Col>
 
             <Col xs={6}><div style={{ marginTop: '20px' }} className="d-flex align-items-center justify-content-center">
-            <h5>Press the button to call the next customer:</h5>
-              <Button style={{marginLeft:'10px'}} variant="success" size="lg" className="btn-lg" onClick={()=>{props.handleNextCustomer(); navigate('/');}}>
+              <h5>Press the button to call the next customer:</h5>
+              <Button style={{ marginLeft: '10px' }} variant="success" size="lg" className="btn-lg" onClick={() => { props.handleNextCustomer(); navigate('/'); }}>
                 Next Customer
               </Button>
             </div></Col>

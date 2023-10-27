@@ -190,6 +190,55 @@ app.delete('/api/sessions/current', (req, res) => {
     req.logout( ()=> { res.end(); } );
 });
 
+app.get('/api/counter', async (req, res) => {  
+    try{
+        const counter = await dao.getCounterDetails();
+        res.status(200).json(counter);
+        }catch(error){
+        res.status(500).end();
+    }
+});
+
+ app.get('/api/counter/number', async (req, res) => {
+    try{
+        const counterNum = await dao.getCounterNumber();
+        res.status(200).json(counterNum);
+        }catch(error){
+        res.status(500).end();
+    }
+});
+
+app.get('/api/services', async (req, res) => {  
+    try{
+        const services = await dao.listServices();
+        res.status(200).json(services);
+        }catch(error){
+        res.status(500).end();
+    }
+});
+
+app.get('/api/officer', async (req, res) => {  
+    try{
+        const officer = await dao.getOfficer();
+        res.status(200).json(officer);
+        }catch(error){
+        res.status(500).end();
+    }
+});
+
+app.post('/api/add', async (req, res) => {  
+    try{
+        const counter = req.body.counter;
+        const service = req.body.service;
+        const officer_id = req.body.officer_id
+        service.forEach( async (s) => {
+            await dao.addServiceToCounter(counter,s,officer_id);
+        })
+        res.status(200).json(true);
+        }catch(error){
+        res.status(500).end();
+    }
+});
 
 const PORT = 3001;
-app.listen(PORT, ()=>console.log(`Server running on http://localhost:${PORT}/`));
+app.listen(PORT, ()=>console.log(`Server running on http://localhost:${PORT}`));
