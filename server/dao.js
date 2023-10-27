@@ -143,15 +143,15 @@ exports.updateQueue = (service) => {
     });
 }
 
-exports.addServiceToCounter = (counterId, serviceName) => {
+exports.addServiceToCounter = (counterId, serviceName,officerId) => {
     return new Promise((resolve, reject) => {
-        const sql = 'INSERT INTO servicesByCounter(counter, service) VALUES (?,?)';
-        db.run(sql, [counterId, serviceName], (err, rows) => {
+        const sql = 'INSERT INTO servicesByCounter(counter, service, officer_id) VALUES(?,?,?)';
+        db.run(sql, [counterId, serviceName, officerId], (err) => {
             if (err) {
-                reject(err);
+                reject(err.message);
                 return;
             }
-            resolve(this.lastID);
+            resolve(true);
         });
     });
 }
@@ -254,3 +254,47 @@ exports.incrementNumberCustomerService = (counterID, serviceName) => {
         });
     });
 }
+//10/26/2023
+exports.getCounterDetails = () =>{
+    return new Promise((resolve, reject) => {
+        const sql = 'SELECT id, counter, service, officer_id FROM servicesByCounter ';
+        db.all(sql, [], (err, rows) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve(rows);
+        });
+    });
+};
+
+exports.getCounterNumber = () =>{
+    return new Promise((resolve, reject) => {
+        const sql = 'SELECT id, name FROM counter ';
+        db.all(sql, [], (err, rows) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            const counter = rows.map((e) => ({
+                id : e.id,
+                name : e.name
+            }));
+            resolve(counter);
+        });
+    });
+};
+
+exports.getOfficer = () =>{
+    return new Promise((resolve, reject) => {
+        const sql = 'SELECT id FROM user WHERE role == "officer"';
+        db.all(sql, [], (err, rows) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve(rows);
+        });
+    });
+};
+
