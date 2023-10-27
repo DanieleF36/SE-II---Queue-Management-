@@ -1,7 +1,7 @@
 # SE-II---Queue-Management-
 
 
- React Client Application Routes
+ React Client Application Routes *
 
 * Route / (Home Page - Display Full Course List When You Arrive on the Site): 
 This route represents the main page of the website. When users arrive on the site, they will see the complete list of services.
@@ -10,7 +10,7 @@ This route represents the main page of the website. When users arrive on the sit
 
 * Route * (For Pages That Do Not Exist): This route is used for pages that do not exist.
 
- API Server
+ API Server *
   
 * Authenticate User - POST /api/session
 
@@ -30,13 +30,28 @@ This route should return information about the currently authenticated user. The
 Please note that the specific request and response structures can vary depending on the authentication mechanism (e.g., token-based authentication or session-based authentication) and the requirements of your application. Additionally, you may want to consider security aspects such as token expiration and refresh mechanisms for security-sensitive applications.
 
 
-Altre
-GET /api/courses: route does not require authentication, it can still return a list of services or information about available services.
+Altre *
+* GET /api/courses: route does not require authentication, it can still return a list of services or information about available services.
 
-GET /api/services/<id>: request does not require authentication, it would return specific information about a service identified by <id>
+* GET /api/services/<id>: request does not require authentication, it would return specific information about a service identified by <id>
 
-POST /api/services/<id> request requires authentication, it typically means that the user is trying to make a specific modification or take action on the service identified by <id>
+* POST /api/services/<id> request requires authentication, it typically means that the user is trying to make a specific modification or take action on the service identified by <id>
 
-GET /api/servicesbycounter/:id  request requires authentication appears to be designed to retrieve information about the services available at a specific counter identified by :id. 
+* GET /api/servicesbycounter/:id  request requires authentication appears to be designed to retrieve information about the services available at a specific counter identified by :id. 
 
-api/nextCustomer/:id  request appears to be designed to retrieve information about the next customer to be served at a specific counter identified by :id.
+* Put/api/nextCustomer/:id  request appears to be designed to retrieve information about the next customer to be served at a specific counter identified by :id.
+
+  Database Tables *
+
+Table counter : (id,name)
+
+Table user: (id,email,username,name,surname,salt,passwword,role)
+
+Table service : (id,text,name,current numeric,last numeric,average time)
+
+Table servicebycounter : (id,counter,service,office_id)
+
+Table counterstats :(id,service,counter,date,number)
+
+Table servicestats:(id,service,data,number)
+  
