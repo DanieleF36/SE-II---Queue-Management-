@@ -66,7 +66,9 @@ GreatButton (in GreatButton.js): component purpose and main functionality
 ...
 (only main components, minor ones may be skipped)
 
+Screenshot
 
 Users Credentials
 username, password (plus any other requested info)
+
 username, password (plus any other requested info)
