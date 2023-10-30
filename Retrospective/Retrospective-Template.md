@@ -1,4 +1,4 @@
-TEMPLATE FOR RETROSPECTIVE (Team ##)
+TEMPLATE FOR RETROSPECTIVE (Team 14)
 =====================================
 
 The retrospective should include _at least_ the following
@@ -12,7 +12,7 @@ sections:
 
 ### Macro statistics
 
-- Number of stories committed vs. done 
+- Number of stories committed vs. done
 - Total points committed vs. done 
 - Nr of hours planned vs. spent (as a team)
 
