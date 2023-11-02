@@ -65,6 +65,7 @@ TEMPLATE FOR RETROSPECTIVE (Team 14)
 - Improvement goals for the next sprint and how to achieve them (technical tasks, team coordination, etc.) :
 
   > branch management : doing internet research, discussing with team members during planning
+  
   > integration test : searching documentation, diving deep in the framework
 
 - One thing you are proud of as a Team: responsability of each team member and comunication
