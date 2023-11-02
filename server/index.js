@@ -39,7 +39,7 @@ app.use(express.json());
 app.use(express.static('public'))
 
 const corsOptions = {
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173','http://localhost:5174'],
     credentials: true,
 };
 app.use(cors(corsOptions));
@@ -63,96 +63,16 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get('/api/pages/:id', [
-    check('id').isInt(),
-], async (req, res)=>{
+// GET /api/servicesbycounter/:id
+app.get('/api/servicesbycounter/:id', async (req, res) => {
     try {
-        let result = await dao.getPage(req.params.id);
-        let paragraph = await dao.getParagraphs(req.params.id);
-        let images = await dao.getImages(req.params.id);
-        let headers = await dao.getHeaders(req.params.id);
-        let block = paragraph.concat(images);
-        block = block.concat(headers);
-        result.order= block.sort((a, b) => a.pos - b.pos );
-        if(result.error)
-            res.status(404).json(result);
-        else
-            res.status(200).json(result);
+      const services = await dao.listServicesByCounter(req.params.id);
+      res.json(services);
     } catch(err) {
-        console.log(err);
-        res.status(500).end();
+      console.log(err);
+      res.status(500).end();
     }
-});
-
-app.post('/api/auth/pages', isLoggedIn, [
-    check('title').isLength({min:1}),
-    check('creationDate').isLength({min: 10, max: 10}).isISO8601({strict: true}).optional({checkFalsy: true}),
-    check('order').isArray({min: 2})
-    ],
-    async (req, res) =>{
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(422).json({errors: errors.array()});
-        }
-        const page = req.body;
-        let h=0, b=0;
-        const p = {
-            title:page.title,
-            author: page.author,
-            authorId: req.user.id,
-            creationDate: page.creationDate,
-            publicationDate: page.publicationDate,
-            ord: page.order.map((e)=>{
-                if(e.text){
-                    b++;
-                    return {
-                        text: e.text,
-                        pos: e.pos
-                    }
-                }
-                else if(e.header) {
-                    h++
-                    return {
-                        header: e.header,
-                        pos: e.pos
-                    }
-                }else{
-                    b++;
-                    return {
-                        id: e.id,
-                        pos: e.pos
-                    }
-                }
-            })
-        }
-        try {
-            if( h<1 || b<1) {
-                throw {err: "Number of block non right"};
-            }
-            if(req.user.username != p.author && req.user.administrator){
-                const aut = await userDao.getIdByUsername(p.author)
-                if(!aut.id)
-                    throw {error: "non-existent author"}
-                p.authorId = aut.id;
-            }
-            const id = await dao.addPage(p);
-            p.ord.map(async (e) => {
-                if (e.text) {
-                    await dao.addParagraph(e, id);
-                } else if(e.header){
-                    await dao.addHeader(e, id);
-                } else{
-                    await dao.addImage(e, id);
-                }
-            });
-            setTimeout(()=>res.status(200).json(id), answerDelay);
-        } catch(err) {
-            console.log(err);
-            if(err.error && err.error != "Number of block non right" && err.error != "non-existent author")
-                res.status(503).json({err: "Database error during the creation of page"});
-            res.status(422).json(err);
-        }
-});
+  });
 
 app.put('/api/nextCustomer/:id', [
     check('id').isInt({min: 0})
@@ -164,33 +84,84 @@ app.put('/api/nextCustomer/:id', [
     try {
         const services = await dao.listServicesByCounter(req.params.id);
         const queueState = await dao.queuesState(services);
+
         let max = -1;
         let averageTime = -1;
         let next = -1;
         let name = '';
+        let code = '';
         for(let i of queueState){
-            if(i.last - i.current >= max) {
+            if(i.last - i.current >0 && i.last - i.current >= max) {
                 max = i.last - i.current;
                 averageTime = i.averageTime;
                 next = i.current +1;
                 name = i.name;
+                code = i.code;
             }
         }
         for(let i of queueState){
-            if(i.last - i.current == max && i.averageTime < averageTime) {
+            if(i.last - i.current >0 && i.last - i.current == max && i.averageTime < averageTime) {
                 averageTime = i.averageTime;
                 max = i.last - i.current;
                 next = i.current +1;
                 name = i.name;
+                code = i.code;
             }
         }
-        await dao.updateQueue(name);
-        res.status(200).json({service: name, nextCustomer: name+next});
+        const nextCustomer = max==-1 ? "No one available":(code+next);
+        await dao.updateQueue(code);
+        res.status(200).json({service: name, nextCustomer: nextCustomer});
     } catch(err) {
         console.log(err);
         res.status(500).json({errors: ["Database error"]});
     }
 });
+
+// GET /api/services/
+app.get('/api/services', async (req, res) => {
+    try {
+      const services = await dao.listServices();
+      res.json(services);
+    } catch(err) {
+      console.log(err);
+      res.status(500).end();
+    }
+  });
+
+// GET /api/services/<id>
+app.get('/api/services/:id', async (req, res) => {
+    try {
+      const result = await dao.getService(req.params.id);
+      if(result.error)
+        res.status(404).json(result);
+      else
+        res.json(result);
+    } catch(err) {
+      console.log(err);
+      res.status(500).end();
+    }
+  });
+
+
+// POST /api/services/<id>
+app.post('/api/services/:id', [
+    check('id').isInt(),
+  ], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({errors: errors.array()});
+    }
+  
+    try {
+      const numRowChanges = await dao.incrLast(req.params.id);
+      // number of changed rows is sent to client as an indicator of success
+      setTimeout(()=>res.json(numRowChanges), answerDelay);
+    } catch (err) {
+      console.log(err);
+      res.status(503).json({ error: `Database error during the increment ${req.params.id}.` });
+    }
+  
+  });
 
 /** ******************************************************************************************************************************************* **/
 
@@ -219,6 +190,55 @@ app.delete('/api/sessions/current', (req, res) => {
     req.logout( ()=> { res.end(); } );
 });
 
+app.get('/api/counter', async (req, res) => {  
+    try{
+        const counter = await dao.getCounterDetails();
+        res.status(200).json(counter);
+        }catch(error){
+        res.status(500).end();
+    }
+});
+
+ app.get('/api/counter/number', async (req, res) => {
+    try{
+        const counterNum = await dao.getCounterNumber();
+        res.status(200).json(counterNum);
+        }catch(error){
+        res.status(500).end();
+    }
+});
+
+app.get('/api/services', async (req, res) => {  
+    try{
+        const services = await dao.listServices();
+        res.status(200).json(services);
+        }catch(error){
+        res.status(500).end();
+    }
+});
+
+app.get('/api/officer', async (req, res) => {  
+    try{
+        const officer = await dao.getOfficer();
+        res.status(200).json(officer);
+        }catch(error){
+        res.status(500).end();
+    }
+});
+
+app.post('/api/add', async (req, res) => {  
+    try{
+        const counter = req.body.counter;
+        const service = req.body.service;
+        const officer_id = req.body.officer_id
+        service.forEach( async (s) => {
+            await dao.addServiceToCounter(counter,s,officer_id);
+        })
+        res.status(200).json(true);
+        }catch(error){
+        res.status(500).end();
+    }
+});
 
 const PORT = 3001;
-app.listen(PORT, ()=>console.log(`Server running on http://localhost:${PORT}/`));
+app.listen(PORT, ()=>console.log(`Server running on http://localhost:${PORT}`));

@@ -9,17 +9,67 @@ const db = new sqlite.Database('db.sqlite', (err) => {
 
 exports.listServices = () =>{
     return new Promise((resolve, reject) => {
-        const sql = 'SELECT S.name, S.averageTime FROM service S ';
+        const sql = 'SELECT service.id AS id, code, name, current, last, averageTime FROM service';
         db.all(sql, [], (err, rows) => {
             if (err) {
                 reject(err);
                 return;
             }
-            const pages = rows.map((e) => ({name: e.name, averageTime: e.averageTime}));
-            resolve(pages);
+            const services = rows.map((e) => (
+                {
+                    id: e.id, 
+                    code: e.code, 
+                    name: e.name, 
+                    current: parseInt(e.current), 
+                    last: parseInt(e.last), 
+                    averageTime: parseInt(e.averageTime),
+                }));
+            resolve(services);
         });
     });
 };
+// get the service identified by {id}
+exports.getService = (id) => {
+    return new Promise((resolve, reject) => {
+      const sql = 'SELECT service.id AS id, code, name, current, last, averageTime FROM service WHERE service.id=?';
+      db.get(sql, [id], (err, row) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        if (row == undefined) {
+          resolve({error: 'Service not found.'});
+        } else {
+          const service = 
+            {
+                id: row.id, 
+                code: row.code, 
+                name: row.name, 
+                current: parseInt(row.current), 
+                last: parseInt(row.last), 
+                averageTime: parseInt(row.averageTime),
+            };
+          resolve(service);
+        }
+      });
+    });
+  };
+
+  // Increment last in a service
+exports.incrLast = (id) => {
+    return new Promise((resolve, reject) => {
+      const sql = 'UPDATE service SET last = last + 1  WHERE id = ?';
+      db.run(sql, [id], function (err) {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(this.changes);
+      });
+    });
+  };
+  
+
 
 exports.addService = (name, avgTime) =>{
     return new Promise((resolve, reject) => {
@@ -63,7 +113,7 @@ exports.listServicesByCounter = (id) =>{
 //Return the current code ticket for all services
 exports.queuesState = (services) => {
     return new Promise((resolve, reject) => {
-        let sql = 'SELECT S.name, S.current, S.last, S.averageTime FROM service S WHERE S.name = ?';
+        let sql = 'SELECT S.name, S.current, S.last, S.averageTime, S.code FROM service S WHERE S.name = ?';
         let params = [];
         for( let s of services) {
             sql += ' OR S.name = ?';
@@ -74,7 +124,7 @@ exports.queuesState = (services) => {
                 reject(err);
                 return;
             }
-            const pages = rows.map((e) => ({name:e.name, current: e.current, last: e.last, averageTime: e.averageTime}));
+            const pages = rows.map((e) => ({name:e.name, current: e.current, last: e.last, averageTime: e.averageTime, code: e.code}));
             resolve(pages);
         });
     });
@@ -82,7 +132,7 @@ exports.queuesState = (services) => {
 
 exports.updateQueue = (service) => {
     return new Promise((resolve, reject) => {
-        const sql = 'UPDATE service SET current = current+1 WHERE name = ?';
+        const sql = 'UPDATE service SET current = current+1 WHERE code = ?';
         db.run(sql, [service], (err, rows) => {
             if (err) {
                 reject(err);
@@ -93,15 +143,15 @@ exports.updateQueue = (service) => {
     });
 }
 
-exports.addServiceToCounter = (counterId, serviceName) => {
+exports.addServiceToCounter = (counterId, serviceName,officerId) => {
     return new Promise((resolve, reject) => {
-        const sql = 'INSERT INTO servicesByCounter(counter, service) VALUES (?,?)';
-        db.run(sql, [counterId, serviceName], (err, rows) => {
+        const sql = 'INSERT INTO servicesByCounter(counter, service, officer_id) VALUES(?,?,?)';
+        db.run(sql, [counterId, serviceName, officerId], (err) => {
             if (err) {
-                reject(err);
+                reject(err.message);
                 return;
             }
-            resolve(this.lastID);
+            resolve(true);
         });
     });
 }
@@ -204,3 +254,47 @@ exports.incrementNumberCustomerService = (counterID, serviceName) => {
         });
     });
 }
+//10/26/2023
+exports.getCounterDetails = () =>{
+    return new Promise((resolve, reject) => {
+        const sql = 'SELECT id, counter, service, officer_id FROM servicesByCounter ';
+        db.all(sql, [], (err, rows) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve(rows);
+        });
+    });
+};
+
+exports.getCounterNumber = () =>{
+    return new Promise((resolve, reject) => {
+        const sql = 'SELECT id, name FROM counter ';
+        db.all(sql, [], (err, rows) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            const counter = rows.map((e) => ({
+                id : e.id,
+                name : e.name
+            }));
+            resolve(counter);
+        });
+    });
+};
+
+exports.getOfficer = () =>{
+    return new Promise((resolve, reject) => {
+        const sql = 'SELECT id FROM user WHERE role == "officer"';
+        db.all(sql, [], (err, rows) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve(rows);
+        });
+    });
+};
+
